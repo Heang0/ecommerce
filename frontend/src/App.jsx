@@ -22,7 +22,6 @@ import Categories from './pages/admin/Categories';
 import Orders from './pages/admin/Orders';
 import { ShoppingCart, Search } from 'lucide-react';
 import bannerImage from './assets/bannner.jpg';
-import { fetchProducts } from './services/api';
 import { useCart } from './context/CartContext';
 
 function AppContent() {
