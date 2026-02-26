@@ -49,7 +49,7 @@ const Header = () => {
                 <div className="flex items-center justify-between h-16 lg:h-20">
                     {/* Logo */}
                     <div className="flex-shrink-0">
-                        <a href="/" className="block">
+                        <a href="#/" className="block">
                             <img
                                 src={logo}
                                 alt="Logo"
@@ -60,20 +60,20 @@ const Header = () => {
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center space-x-8">
                         <a
-                            href="/"
+                            href="#/"
                             className={`${language === 'km' ? 'font-khmer' : 'font-sans'} text-gray-700 hover:text-[#005E7B] text-sm font-medium transition-colors`}
                         >
                             {t.home}
                         </a>
                         <a
-                            href="/sale"
+                            href="#/sale"
                             className={`${language === 'km' ? 'font-khmer' : 'font-sans'} text-gray-700 hover:text-[#005E7B] text-sm font-medium transition-colors`}
                         >
                             {t.sale}
                         </a>
                         {/* Add Contact Link */}
                         <a
-                            href="/contact"
+                            href="#/contact"
                             className={`${language === 'km' ? 'font-khmer' : 'font-sans'} text-gray-700 hover:text-[#005E7B] text-sm font-medium transition-colors`}
                         >
                             {t.contact}
@@ -178,20 +178,20 @@ const Header = () => {
                     <div className="md:hidden py-4 border-t border-gray-100">
                         <div className="flex flex-col space-y-3">
                             <a
-                                href="/"
+                                href="#/"
                                 className={`px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg text-sm ${language === 'km' ? 'font-khmer' : 'font-sans'} font-medium`}
                             >
                                 {t.home}
                             </a>
                             <a
-                                href="/sale"
+                                href="#/sale"
                                 className={`px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg text-sm ${language === 'km' ? 'font-khmer' : 'font-sans'} font-medium`}
                             >
                                 {t.sale}
                             </a>
                             {/* Add Contact Link to Mobile Menu */}
                             <a
-                                href="/contact"
+                                href="#/contact"
                                 className={`px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg text-sm ${language === 'km' ? 'font-khmer' : 'font-sans'} font-medium`}
                             >
                                 {t.contact}
