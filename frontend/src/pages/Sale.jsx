@@ -46,9 +46,12 @@ const Sale = () => {
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-10 w-10 border-3 border-gray-200 border-t-[#005E7B]"></div>
-                <p className="mt-3 text-sm text-gray-500 font-sans">
-                    {language === 'km' ? 'កំពុងផ្ទុក...' : 'Loading...'}
+                <div className="relative">
+                    <div className="w-12 h-12 border-2 border-gray-100 rounded-full"></div>
+                    <div className="absolute top-0 left-0 w-12 h-12 border-2 border-[#005E7B] rounded-full border-t-transparent animate-spin"></div>
+                </div>
+                <p className="mt-4 text-sm text-gray-500 font-sans">
+                    Loading...
                 </p>
             </div>
         );
@@ -126,13 +129,13 @@ const Sale = () => {
                                             </div>
                                             {/* Button color - FIXED to match home page [#005E7B] */}
                                             <button
-                                                className="p-1.5 sm:p-2 bg-[#005E7B] text-white rounded-full hover:bg-[#004b63] transition-colors"
+                                                className="p-2 bg-[#005E7B] text-white rounded-full hover:bg-[#004b63] hover:scale-110 transition-all duration-200"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     addToCart(product, 1);
                                                 }}
                                             >
-                                                <ShoppingCart size={14} className="sm:w-4 sm:h-4" />
+                                                <ShoppingCart size={18} />
                                             </button>
                                         </div>
                                     </div>

@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useLanguage } from '../context/LanguageContext';
 import { createOrder } from '../services/api';
-import { ArrowLeft, Truck, Phone, MapPin, Mail, FileText, CreditCard, Shield, Lock } from 'lucide-react';
+import { ArrowLeft, Truck, Phone, MapPin, Mail, FileText, CreditCard, Shield, Lock, ExternalLink } from 'lucide-react';
 import abaLogo from '../assets/ABA BANK.svg';
 
 const Checkout = () => {
     const navigate = useNavigate();
     const { cart, getCartTotal, clearCart } = useCart();
+    const { language } = useLanguage();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         fullName: '',
@@ -17,64 +19,7 @@ const Checkout = () => {
         note: ''
     });
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (cart.length === 0) {
-            alert('Your cart is empty');
-            return;
-        }
-
-        setLoading(true);
-
-        const orderData = {
-            customer: formData,
-            items: cart.map(item => ({
-                productId: item._id,
-                nameKm: item.nameKm,
-                nameEn: item.nameEn,
-                price: item.salePrice || item.price,
-                quantity: item.quantity,
-                image: item.image
-            })),
-            subtotal: getCartTotal(),
-            total: getCartTotal(),
-            paymentMethod: 'Bakong KHQR',
-            paymentStatus: 'pending'
-        };
-
-        try {
-            const response = await createOrder(orderData);
-            console.log('Order created:', response);
-
-            if (response.payment) {
-                // Navigate to payment page with QR code
-                navigate(`/payment/${response.order.id}`, {
-                    state: {
-                        payment: response.payment,
-                        order: response.order
-                    }
-                });
-
-                // Clear cart
-                clearCart();
-            }
-
-        } catch (error) {
-            console.error('Checkout error:', error);
-            alert('Failed to place order. Please try again.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
+    // Handle empty cart case first
     if (cart.length === 0) {
         return (
             <div className="max-w-2xl mx-auto px-4 py-12 text-center">
@@ -95,19 +40,81 @@ const Checkout = () => {
         );
     }
 
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        setLoading(true);
+
+        const total = getCartTotal();
+        const orderData = {
+            customer: formData,
+            items: cart.map(item => ({
+                productId: item._id,
+                nameKm: item.nameKm,
+                nameEn: item.nameEn,
+                price: item.salePrice || item.price,
+                quantity: item.quantity,
+                image: item.image
+            })),
+            subtotal: total,
+            total: total,
+            paymentMethod: 'ABA Payway Link',
+            paymentStatus: 'pending'
+        };
+
+        try {
+            const response = await createOrder(orderData);
+            console.log('Order created:', response);
+
+            // Clear cart
+            clearCart();
+
+            // Check if response has order data
+            if (response.order && response.order.id) {
+                // Create dynamic payment link with amount
+                const baseLink = 'https://link.payway.com.kh/ABAPAYdj419233l';
+                const paymentLink = `${baseLink}?amount=${total}&orderId=${response.order.orderNumber}`;
+
+                // Open payment link in new tab
+                window.open(paymentLink, '_blank');
+
+                // Show success message
+                alert(`Order placed! Please complete payment of $${total} using the link that opened.`);
+
+                // Redirect to order tracking page
+                navigate(`/order-tracking/${response.order.id}`);
+            } else {
+                // Fallback if no order ID
+                alert('Order placed successfully!');
+                navigate('/');
+            }
+
+        } catch (error) {
+            console.error('Checkout error:', error);
+            alert('Failed to place order. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
-        <div className="w-full px-0 sm:px-4 py-6">
-            {/* Back Button - Modern Icon Only */}
+        <div className="max-w-6xl mx-auto px-4 py-6">
+            {/* Back Button */}
             <button
                 onClick={() => navigate(-1)}
                 className="flex items-center justify-center w-10 h-10 mb-4 ml-2 sm:ml-0 rounded-full bg-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 text-gray-700 hover:text-[#005E7B] border border-gray-100"
-                aria-label="Go back"
             >
                 <ArrowLeft size={20} />
             </button>
 
-            {/* Main content - also edge-to-edge on mobile */}
-            <div className="w-full px-4 sm:px-0">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Column - Checkout Form */}
                 <div className="lg:col-span-2">
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -200,12 +207,30 @@ const Checkout = () => {
                                 </div>
                             </div>
 
-                            {/* Payment Method - Simple Display */}
-                            <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                <img src={abaLogo} alt="ABA Bank" className="h-8 w-auto" />
-                                <div>
-                                    <p className="font-semibold font-sans">ABA KHQR</p>
-                                    <p className="text-xs text-gray-500 font-sans">Payment link will open after order</p>
+                            {/* Payment Method */}
+                            <div>
+                                <h2 className="text-lg font-semibold mb-4 font-sans flex items-center gap-2">
+                                    <CreditCard size={20} className="text-[#005E7B]" />
+                                    Payment Method
+                                </h2>
+
+                                <div className="border-2 border-[#005E7B] bg-blue-50 rounded-xl p-4">
+                                    <div className="flex items-center gap-3">
+                                        <img src={abaLogo} alt="ABA Bank" className="h-8 w-auto" />
+                                        <div className="flex-1">
+                                            <h3 className="font-semibold font-sans">ABA Payway Link</h3>
+                                            <p className="text-sm text-gray-600 font-sans">
+                                                You'll pay ${getCartTotal().toFixed(2)} via secure payment link
+                                            </p>
+                                        </div>
+                                        <ExternalLink size={20} className="text-[#005E7B]" />
+                                    </div>
+                                </div>
+
+                                <div className="mt-4 p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+                                    <p className="text-sm text-yellow-800 font-sans">
+                                        <span className="font-bold">Note:</span> After placing order, a payment link will open in new tab. Complete payment there.
+                                    </p>
                                 </div>
                             </div>
 
@@ -223,7 +248,7 @@ const Checkout = () => {
                                 ) : (
                                     <>
                                         <Lock size={18} />
-                                        <span>Pay with Bakong • ${getCartTotal().toFixed(2)}</span>
+                                        <span>Place Order & Pay • ${getCartTotal().toFixed(2)}</span>
                                     </>
                                 )}
                             </button>
@@ -273,6 +298,13 @@ const Checkout = () => {
                                 <span className="font-sans">Total</span>
                                 <span className="font-sans text-[#005E7B]">${getCartTotal().toFixed(2)}</span>
                             </div>
+                        </div>
+
+                        {/* Payment Link Badge */}
+                        <div className="mt-4 p-3 bg-blue-50 rounded-lg text-center">
+                            <p className="text-xs font-sans text-[#005E7B]">
+                                🔗 Payment link will open after order
+                            </p>
                         </div>
                     </div>
                 </div>

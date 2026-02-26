@@ -44,13 +44,12 @@ const AdminLayout = ({ children }) => {
             path: '/admin/orders',
             name: 'Orders',
             icon: <ShoppingBag size={20} />,
-
         },
         {
             path: '/admin/settings',
             name: 'Settings',
             icon: <Settings size={20} />,
-            soon: true // Keep "soon" for future features
+            soon: true
         }
     ];
 
@@ -63,26 +62,25 @@ const AdminLayout = ({ children }) => {
         return location.pathname === path;
     };
 
+    const handleLinkClick = () => {
+        if (window.innerWidth < 1024) { // lg breakpoint
+            setSidebarOpen(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-100">
-            {/* Mobile Sidebar Overlay */}
-            {sidebarOpen && (
-                <div
-                    className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
-                    onClick={() => setSidebarOpen(false)}
-                />
-            )}
 
             {/* Sidebar */}
             <div className={`
-        fixed top-0 left-0 h-full bg-white shadow-lg z-30
-        transition-transform duration-300 ease-in-out
-        w-64 lg:translate-x-0
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
+                fixed top-0 left-0 h-full bg-white shadow-lg z-30
+                transition-transform duration-300 ease-in-out
+                w-64 lg:translate-x-0
+                ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+            `}>
                 {/* Sidebar Header */}
                 <div className="h-16 flex items-center justify-between px-4 border-b">
-                    <h1 className="text-xl font-bold text-blue-600 font-khmer">Admin Panel</h1>
+                    <h1 className="text-xl font-bold text-blue-600 font-sans tracking-tight">Admin Panel</h1>
                     <button
                         onClick={() => setSidebarOpen(false)}
                         className="lg:hidden p-1 hover:bg-gray-100 rounded"
@@ -107,13 +105,14 @@ const AdminLayout = ({ children }) => {
                                 ) : (
                                     <Link
                                         to={item.path}
+                                        onClick={handleLinkClick}
                                         className={`
-                      flex items-center gap-3 px-4 py-2 rounded-lg transition-colors font-sans
-                      ${isActive(item.path)
+                                            flex items-center gap-3 px-4 py-2 rounded-lg transition-colors font-sans
+                                            ${isActive(item.path)
                                                 ? 'bg-blue-50 text-blue-600'
                                                 : 'text-gray-700 hover:bg-gray-100'
                                             }
-                    `}
+                                        `}
                                     >
                                         {item.icon}
                                         <span>{item.name}</span>

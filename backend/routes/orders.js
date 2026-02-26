@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 const authMiddleware = require('../middleware/auth');
-const bakong = require('../services/bakong');  // Move require to top
 
 // Helper function to generate order number
 const generateOrderNumber = () => {
@@ -16,10 +15,10 @@ const generateOrderNumber = () => {
 
 // ========== PUBLIC ROUTES ==========
 
-// CREATE order (public - checkout with Bakong KHQR)
+// CREATE order (public - checkout)
 router.post('/', async (req, res) => {
     try {
-        console.log('📦 Creating new order with Bakong KHQR...');
+        console.log('📦 Creating new order...');
         console.log('Request body:', JSON.stringify(req.body, null, 2));
 
         // Validate required fields
@@ -37,11 +36,11 @@ router.post('/', async (req, res) => {
             });
         }
 
-        // Generate order number manually
+        // Generate order number
         const orderNumber = generateOrderNumber();
         console.log('Generated order number:', orderNumber);
 
-        // Create order data with manual orderNumber
+        // Create order data
         const orderData = {
             orderNumber: orderNumber,
             customer: {
@@ -61,7 +60,7 @@ router.post('/', async (req, res) => {
             })),
             subtotal: req.body.subtotal,
             total: req.body.total,
-            paymentMethod: 'Bakong KHQR',
+            paymentMethod: req.body.paymentMethod || 'ABA Payway Link',
             paymentStatus: 'pending',
             orderStatus: 'pending'
         };
@@ -72,21 +71,6 @@ router.post('/', async (req, res) => {
 
         console.log('✅ Order saved to database:', savedOrder.orderNumber);
 
-        // Generate Bakong KHQR for this order
-        console.log('🔄 Generating Bakong KHQR...');
-        const khqr = await bakong.generateKHQR(savedOrder);
-
-        // Save MD5 to order for later verification
-        savedOrder.paymentMd5 = khqr.md5;
-        savedOrder.paymentData = {
-            amountKHR: khqr.amountKHR,
-            qrCode: khqr.qrCode,
-            qrImage: khqr.qrImage
-        };
-        await savedOrder.save();
-
-        console.log('✅ KHQR generated successfully:', khqr.md5);
-
         res.status(201).json({
             success: true,
             message: 'Order created successfully',
@@ -94,15 +78,9 @@ router.post('/', async (req, res) => {
                 id: savedOrder._id,
                 orderNumber: savedOrder.orderNumber,
                 total: savedOrder.total,
+                customer: savedOrder.customer,
                 paymentStatus: savedOrder.paymentStatus,
-                createdAt: savedOrder.createdAt,
-                qrImage: khqr.qrImage  // Send QR image to frontend
-            },
-            payment: {
-                qrImage: khqr.qrImage,
-                md5: khqr.md5,
-                amountUSD: khqr.amountUSD,
-                amountKHR: khqr.amountKHR
+                createdAt: savedOrder.createdAt
             }
         });
 
@@ -115,40 +93,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Check payment status
-router.get('/:id/check-payment', async (req, res) => {
-    try {
-        const order = await Order.findById(req.params.id);
-
-        if (!order) {
-            return res.status(404).json({ success: false, message: 'Order not found' });
-        }
-
-        if (!order.paymentMd5) {
-            return res.status(400).json({ success: false, message: 'No payment MD5' });
-        }
-
-        const result = await bakong.checkPaymentStatus(order.paymentMd5);
-
-        // If payment confirmed, update order
-        if (result.status === 'PAID' && order.paymentStatus !== 'paid') {
-            order.paymentStatus = 'paid';
-            await order.save();
-        }
-
-        res.json({
-            success: true,
-            paid: order.paymentStatus === 'paid',
-            status: result.status
-        });
-
-    } catch (error) {
-        console.error('Error checking payment:', error);
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-// GET single order by ID
+// GET single order by ID (public - for order tracking)
 router.get('/:id', async (req, res) => {
     try {
         const order = await Order.findById(req.params.id);
@@ -165,10 +110,47 @@ router.get('/:id', async (req, res) => {
             order: {
                 id: order._id,
                 orderNumber: order.orderNumber,
+                customer: order.customer,
+                items: order.items,
+                subtotal: order.subtotal,
+                total: order.total,
+                paymentMethod: order.paymentMethod,
+                paymentStatus: order.paymentStatus,
+                orderStatus: order.orderStatus,
+                createdAt: order.createdAt
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching order:', error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+});
+
+// GET order by order number (public)
+router.get('/number/:orderNumber', async (req, res) => {
+    try {
+        const order = await Order.findOne({ orderNumber: req.params.orderNumber });
+
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: 'Order not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            order: {
+                id: order._id,
+                orderNumber: order.orderNumber,
+                customer: order.customer,
+                items: order.items,
                 total: order.total,
                 paymentStatus: order.paymentStatus,
                 orderStatus: order.orderStatus,
-                qrImage: order.paymentData?.qrImage,
                 createdAt: order.createdAt
             }
         });
@@ -187,7 +169,20 @@ router.get('/:id', async (req, res) => {
 router.get('/', authMiddleware, async (req, res) => {
     try {
         const orders = await Order.find().sort({ createdAt: -1 });
-        res.json(orders);
+
+        res.json(orders.map(order => ({
+            _id: order._id,
+            orderNumber: order.orderNumber,
+            customer: order.customer,
+            items: order.items,
+            subtotal: order.subtotal,
+            total: order.total,
+            paymentMethod: order.paymentMethod,
+            paymentStatus: order.paymentStatus,
+            orderStatus: order.orderStatus,
+            createdAt: order.createdAt,
+            updatedAt: order.updatedAt
+        })));
     } catch (error) {
         console.error('Error fetching orders:', error);
         res.status(500).json({
@@ -209,15 +204,32 @@ router.put('/:id', authMiddleware, async (req, res) => {
             });
         }
 
-        if (req.body.orderStatus) order.orderStatus = req.body.orderStatus;
-        if (req.body.paymentStatus) order.paymentStatus = req.body.paymentStatus;
+        // Update order status if provided
+        if (req.body.orderStatus) {
+            order.orderStatus = req.body.orderStatus;
+        }
+
+        // Update payment status if provided
+        if (req.body.paymentStatus) {
+            order.paymentStatus = req.body.paymentStatus;
+        }
 
         const updatedOrder = await order.save();
+
+        console.log(`✅ Order ${order.orderNumber} updated:`, {
+            orderStatus: updatedOrder.orderStatus,
+            paymentStatus: updatedOrder.paymentStatus
+        });
 
         res.json({
             success: true,
             message: 'Order updated successfully',
-            order: updatedOrder
+            order: {
+                id: updatedOrder._id,
+                orderNumber: updatedOrder.orderNumber,
+                orderStatus: updatedOrder.orderStatus,
+                paymentStatus: updatedOrder.paymentStatus
+            }
         });
     } catch (error) {
         console.error('Error updating order:', error);

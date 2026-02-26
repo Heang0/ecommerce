@@ -57,7 +57,6 @@ const Header = () => {
                             />
                         </a>
                     </div>
-
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center space-x-8">
                         <a
@@ -71,6 +70,13 @@ const Header = () => {
                             className={`${language === 'km' ? 'font-khmer' : 'font-sans'} text-gray-700 hover:text-[#005E7B] text-sm font-medium transition-colors`}
                         >
                             {t.sale}
+                        </a>
+                        {/* Add Contact Link */}
+                        <a
+                            href="/contact"
+                            className={`${language === 'km' ? 'font-khmer' : 'font-sans'} text-gray-700 hover:text-[#005E7B] text-sm font-medium transition-colors`}
+                        >
+                            {t.contact}
                         </a>
                     </div>
 
@@ -182,6 +188,13 @@ const Header = () => {
                                 className={`px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg text-sm ${language === 'km' ? 'font-khmer' : 'font-sans'} font-medium`}
                             >
                                 {t.sale}
+                            </a>
+                            {/* Add Contact Link to Mobile Menu */}
+                            <a
+                                href="/contact"
+                                className={`px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg text-sm ${language === 'km' ? 'font-khmer' : 'font-sans'} font-medium`}
+                            >
+                                {t.contact}
                             </a>
 
                             {/* Mobile Language Switcher with Flag */}

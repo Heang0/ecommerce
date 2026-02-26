@@ -1,0 +1,85 @@
+my-ecommerce-site/
+│
+├── backend/
+│   ├── models/
+│   │   ├── Admin.js
+│   │   ├── Product.js              ✅ With slug auto-generation
+│   │   ├── Category.js
+│   │   └── Order.js                 ✅ With order number generation
+│   │
+│   ├── routes/
+│   │   ├── auth.js
+│   │   ├── products.js              ✅ With slug lookup route
+│   │   ├── categories.js
+│   │   └── orders.js                 ✅ With payment status checking
+│   │
+│   ├── middleware/
+│   │   └── auth.js
+│   │
+│   ├── services/
+│   │   └── bakong.js                 ✅ Bakong KHQR integration
+│   │
+│   ├── .env
+│   ├── server.js
+│   ├── package.json
+│   └── package-lock.json
+│
+├── frontend/
+│   ├── public/
+│   │   └── vite.svg
+│   │
+│   ├── src/
+│   │   ├── assets/
+│   │   │   ├── bannner.jpg
+│   │   │   ├── logo.png
+│   │   │   └── ABA BANK.svg          ✅ ABA logo
+│   │   │
+│   │   ├── components/
+│   │   │   ├── admin/
+│   │   │   │   └── AdminLayout.jsx    ✅ With fixed sidebar
+│   │   │   ├── Header.jsx             ✅ With search, language toggle, flags
+│   │   │   ├── ProtectedRoute.jsx
+│   │   │   ├── CloudinaryUpload.jsx   ✅ With image optimization
+│   │   │   └── CartSidebar.jsx        ✅ With animations, language support
+│   │   │
+│   │   ├── context/
+│   │   │   ├── AuthContext.jsx
+│   │   │   ├── LanguageContext.jsx    ✅ With localStorage persistence
+│   │   │   ├── CartContext.jsx        ✅ With localStorage, no auto-open
+│   │   │   ├── SearchContext.jsx      ✅ NEW - Global search state
+│   │   │   └── translations.js        ✅ Khmer/English translations
+│   │   │
+│   │   ├── pages/
+│   │   │   ├── admin/
+│   │   │   │   ├── Dashboard.jsx      ✅ With stats
+│   │   │   │   ├── Categories.jsx     ✅ Dynamic categories, no icons
+│   │   │   │   ├── AddProduct.jsx     ✅ With Cloudinary, slug generation
+│   │   │   │   ├── ProductList.jsx    ✅ Shows category names
+│   │   │   │   ├── EditProduct.jsx    ✅ With dynamic categories
+│   │   │   │   └── Orders.jsx         ✅ With payment status
+│   │   │   │
+│   │   │   ├── Login.jsx
+│   │   │   ├── ProductDetail.jsx      ✅ SEO-friendly URLs, edge-to-edge mobile
+│   │   │   ├── Sale.jsx               ✅ Only discounted products
+│   │   │   ├── Checkout.jsx           ✅ With form, ABA payment
+│   │   │   ├── PaymentPage.jsx        ✅ Bakong QR display
+│   │   │   ├── OrderSuccess.jsx
+│   │   │   ├── SearchResults.jsx      ✅ Search results page
+│   │   │   └── Contact.jsx            ✅ NEW - Professional contact page with map
+│   │   │
+│   │   ├── services/
+│   │   │   └── api.js                  ✅ With all API functions
+│   │   │
+│   │   ├── App.jsx                     ✅ With search, categories, load more
+│   │   ├── main.jsx                    ✅ With all providers
+│   │   └── index.css                    ✅ With animations, fonts
+│   │
+│   ├── .env
+│   ├── index.html
+│   ├── vite.config.js
+│   ├── tailwind.config.js
+│   ├── postcss.config.js
+│   ├── package.json
+│   └── package-lock.json
+│
+└── README.md

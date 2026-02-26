@@ -46,11 +46,16 @@ const ProductDetail = () => {
         if (!salePrice) return 0;
         return Math.round(((price - salePrice) / price) * 100);
     };
-
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#005E7B]"></div>
+            <div className="flex flex-col items-center justify-center h-64">
+                <div className="relative">
+                    <div className="w-12 h-12 border-2 border-gray-100 rounded-full"></div>
+                    <div className="absolute top-0 left-0 w-12 h-12 border-2 border-[#005E7B] rounded-full border-t-transparent animate-spin"></div>
+                </div>
+                <p className="mt-4 text-sm text-gray-500 font-sans">
+                    Loading...
+                </p>
             </div>
         );
     }
@@ -234,13 +239,13 @@ const ProductDetail = () => {
                                                 )}
                                             </div>
                                             <button
-                                                className="p-1.5 sm:p-2 bg-[#005E7B] text-white rounded-full hover:bg-[#004b63] transition-colors"
+                                                className="p-2 bg-[#005E7B] text-white rounded-full hover:bg-[#004b63] hover:scale-110 transition-all duration-200"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     addToCart(related, 1);
                                                 }}
                                             >
-                                                <ShoppingCart size={12} className="sm:w-4 sm:h-4" />
+                                                <ShoppingCart size={18} />
                                             </button>
                                         </div>
                                     </div>

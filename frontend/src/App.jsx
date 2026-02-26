@@ -5,6 +5,8 @@ import Header from './components/Header';
 import CartSidebar from './components/CartSidebar';
 import Login from './pages/Login';
 import Sale from './pages/Sale';
+import Contact from './pages/Contact';
+import OrderTracking from './pages/OrderTracking';
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
 import PaymentPage from './pages/PaymentPage';
@@ -92,7 +94,11 @@ function AppContent() {
   useEffect(() => {
     const loadCategories = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/categories');
+        const API_URL = import.meta.env.DEV
+          ? 'http://localhost:5000/api'
+          : `${window.location.origin}/api`;
+
+        const response = await fetch(`${API_URL}/categories`);
         const data = await response.json();
         setCategories(data);
       } catch (err) {
@@ -203,12 +209,17 @@ function AppContent() {
                 </div>
               )}
 
-              {/* Loading State */}
+              {/* Loading State - Modern with Icon */}
               {loading && (
                 <div className="flex flex-col items-center justify-center py-12">
-                  <div className="animate-spin rounded-full h-10 w-10 border-3 border-gray-200 border-t-[#005E7B]"></div>
-                  <p className="mt-3 text-sm text-gray-500 font-sans">
-                    {language === 'km' ? 'កំពុងផ្ទុក...' : 'Loading...'}
+                  <div className="relative">
+                    {/* Outer ring */}
+                    <div className="w-12 h-12 border-2 border-gray-100 rounded-full"></div>
+                    {/* Spinning inner ring with brand color */}
+                    <div className="absolute top-0 left-0 w-12 h-12 border-2 border-[#005E7B] rounded-full border-t-transparent animate-spin"></div>
+                  </div>
+                  <p className="mt-4 text-sm text-gray-500 font-sans">
+                    Loading...
                   </p>
                 </div>
               )}
@@ -310,13 +321,13 @@ function AppContent() {
                                   )}
                                 </div>
                                 <button
-                                  className="p-1.5 bg-[#005E7B] text-white rounded-full hover:bg-[#004b63] transition-colors"
+                                  className="p-2 bg-[#005E7B] text-white rounded-full hover:bg-[#004b63] hover:scale-110 transition-all duration-200"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     addToCart(product, 1);
                                   }}
                                 >
-                                  <ShoppingCart size={14} />
+                                  <ShoppingCart size={18} />
                                 </button>
                               </div>
                             </div>
@@ -346,7 +357,9 @@ function AppContent() {
           <Route path="/product/:slug" element={<ProductDetail />} />
           <Route path="/sale" element={<Sale />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/payment/:id" element={<PaymentPage />} />
+          <Route path="/order-tracking/:id" element={<OrderTracking />} />
           <Route path="/order-success/:id" element={<OrderSuccess />} />
           <Route path="/login" element={<Login />} />
 
@@ -389,10 +402,7 @@ function AppContent() {
         <footer className="bg-white border-t mt-8 sm:mt-10 py-6">
           <div className="container mx-auto px-4 text-center">
             <p className="font-khmer text-xs sm:text-sm text-gray-500">
-              © 2026 ហាងអនឡាញ
-            </p>
-            <p className="font-sans text-xs text-gray-400 mt-1">
-              Online Shop. All rights reserved.
+              © 2026  Sabay Tenh. All rights reserved.
             </p>
           </div>
         </footer>

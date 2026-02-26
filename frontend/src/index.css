@@ -207,3 +207,28 @@ body {
 *:focus:not(:focus-visible) {
     outline: none;
 }
+
+/* Loading dots animation */
+@keyframes ellipsis {
+
+    0%,
+    100% {
+        opacity: 0.2;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.animate-ellipsis {
+    animation: ellipsis 1.5s infinite;
+}
+
+.animation-delay-200 {
+    animation-delay: 0.2s;
+}
+
+.animation-delay-400 {
+    animation-delay: 0.4s;
+}

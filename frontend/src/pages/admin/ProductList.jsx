@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchProducts, deleteProduct } from '../../services/api';
-import { Edit, Trash2, Plus } from 'lucide-react';
+import { Edit, Trash2, Plus, Search, X, Filter } from 'lucide-react';
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('all');
+    const [showFilters, setShowFilters] = useState(false);
+    const [stockFilter, setStockFilter] = useState('all'); // 'all', 'inStock', 'outOfStock'
     const navigate = useNavigate();
 
     const API_URL = import.meta.env.DEV
@@ -32,6 +37,7 @@ const ProductList = () => {
             setLoading(true);
             const data = await fetchProducts();
             setProducts(data);
+            setFilteredProducts(data);
             setError(null);
         } catch (err) {
             setError('Failed to load products');
@@ -45,6 +51,35 @@ const ProductList = () => {
         loadProducts();
         fetchCategories();
     }, []);
+
+    // Filter products when search, category, or stock filter changes
+    useEffect(() => {
+        let filtered = [...products];
+
+        // Search filter
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(p =>
+                p.nameKm.toLowerCase().includes(query) ||
+                p.nameEn.toLowerCase().includes(query) ||
+                (p.description && p.description.toLowerCase().includes(query))
+            );
+        }
+
+        // Category filter
+        if (selectedCategory !== 'all') {
+            filtered = filtered.filter(p => p.category === selectedCategory);
+        }
+
+        // Stock filter
+        if (stockFilter === 'inStock') {
+            filtered = filtered.filter(p => p.inStock);
+        } else if (stockFilter === 'outOfStock') {
+            filtered = filtered.filter(p => !p.inStock);
+        }
+
+        setFilteredProducts(filtered);
+    }, [searchQuery, selectedCategory, stockFilter, products]);
 
     // Helper function to get category name from ID
     const getCategoryName = (categoryId) => {
@@ -76,6 +111,13 @@ const ProductList = () => {
         navigate(`/admin/edit-product/${id}`);
     };
 
+    // Clear all filters
+    const clearFilters = () => {
+        setSearchQuery('');
+        setSelectedCategory('all');
+        setStockFilter('all');
+    };
+
     if (loading) {
         return (
             <div className="flex justify-center items-center py-20">
@@ -100,28 +142,100 @@ const ProductList = () => {
 
     return (
         <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex justify-between items-center mb-6">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 <div>
                     <h2 className="text-2xl font-bold font-khmer">បញ្ជីផលិតផល</h2>
-                    <p className="text-gray-600 font-sans">Product List</p>
+                    <p className="text-gray-600 font-sans">Product List ({filteredProducts.length} items)</p>
                 </div>
                 <button
                     onClick={() => navigate('/admin/add-product')}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                 >
                     <Plus size={20} />
                     <span className="font-sans">Add New</span>
                 </button>
             </div>
 
-            {products.length === 0 ? (
+            {/* Search and Filters */}
+            <div className="mb-6 space-y-4">
+                {/* Search Bar */}
+                <div className="relative">
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search products by name or description..."
+                        className="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-sans"
+                    />
+                    <Search size={18} className="absolute left-3 top-3.5 text-gray-400" />
+                    {searchQuery && (
+                        <button
+                            onClick={() => setSearchQuery('')}
+                            className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600"
+                        >
+                            <X size={18} />
+                        </button>
+                    )}
+                </div>
+
+                {/* Filter Toggle for Mobile */}
+                <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="lg:hidden flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                    <Filter size={18} />
+                    <span className="font-sans">Filters</span>
+                </button>
+
+                {/* Filter Options */}
+                <div className={`${showFilters ? 'block' : 'hidden'} lg:block space-y-4 lg:space-y-0 lg:flex lg:items-center lg:gap-4`}>
+                    {/* Category Filter */}
+                    <select
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        className="w-full lg:w-48 p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-sans"
+                    >
+                        <option value="all">All Categories</option>
+                        {categories.map(cat => (
+                            <option key={cat._id} value={cat._id}>
+                                {cat.nameEn}
+                            </option>
+                        ))}
+                    </select>
+
+                    {/* Stock Filter */}
+                    <select
+                        value={stockFilter}
+                        onChange={(e) => setStockFilter(e.target.value)}
+                        className="w-full lg:w-40 p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-sans"
+                    >
+                        <option value="all">All Stock</option>
+                        <option value="inStock">In Stock</option>
+                        <option value="outOfStock">Out of Stock</option>
+                    </select>
+
+                    {/* Clear Filters Button */}
+                    {(searchQuery || selectedCategory !== 'all' || stockFilter !== 'all') && (
+                        <button
+                            onClick={clearFilters}
+                            className="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors font-sans"
+                        >
+                            Clear Filters
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* Products Table */}
+            {filteredProducts.length === 0 ? (
                 <div className="text-center py-10">
-                    <p className="text-gray-600 font-sans">No products found.</p>
+                    <p className="text-gray-600 font-sans">No products found matching your criteria.</p>
                     <button
-                        onClick={() => navigate('/admin/add-product')}
+                        onClick={clearFilters}
                         className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                     >
-                        Add Your First Product
+                        Clear Filters
                     </button>
                 </div>
             ) : (
@@ -139,7 +253,7 @@ const ProductList = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y">
-                            {products.map((product) => (
+                            {filteredProducts.map((product) => (
                                 <tr key={product._id} className="hover:bg-gray-50">
                                     <td className="px-4 py-3">
                                         <img

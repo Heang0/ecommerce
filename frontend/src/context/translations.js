@@ -5,6 +5,7 @@ export const translations = {
         shop: 'ទិញឥវ៉ាន់',
         categories: 'ប្រភេទ',
         sale: 'បញ្ចុះតម្លៃ',
+        contact: 'ទំនាក់ទំនង',
         allProducts: 'ផលិតផលទាំងអស់',
         viewAll: 'មើលទាំងអស់',
 
@@ -40,6 +41,7 @@ export const translations = {
         shop: 'Shop',
         categories: 'Categories',
         sale: 'Sale',
+        contact: 'Contact',
         allProducts: 'All Products',
         viewAll: 'View All',
 
