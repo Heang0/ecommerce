@@ -48,6 +48,8 @@ function AppContent() {
   const [visibleCount, setVisibleCount] = useState(20);
   const productsPerPage = 20;
 
+  // 👇 ADD THESE NEW LINES
+  const [showBackToTop, setShowBackToTop] = useState(false);
   // Filter products by category AND search
   const filteredProducts = products.filter(product => {
     // Category filter
@@ -103,15 +105,36 @@ function AppContent() {
     };
     loadCategories();
   }, []);
+  // Show back to top button when scrolling down
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 400) {
+        setShowBackToTop(true);
+      } else {
+        setShowBackToTop(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Reset pagination when category or search changes
   useEffect(() => {
     setVisibleCount(20);
   }, [selectedCategory, searchQuery]);
 
+
   const handleCategoryClick = (categoryId) => {
     setSelectedCategory(categoryId);
   };
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
 
   const clearSearch = () => {
     // This will be handled by the header component
@@ -270,11 +293,12 @@ function AppContent() {
 
                       {/* Product Grid */}
                       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                        {displayedProducts.map((product) => (
+                        {displayedProducts.map((product, index) => (
                           <div
                             key={product._id}
-                            onClick={() => window.location.href = `#/product/${product.slug}`}
-                            className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer"
+                            onClick={() => navigate(`/product/${product.slug}`)}
+                            className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer animate-fadeInUp"
+                            style={{ animationDelay: `${index * 0.05}s` }}  // Stagger by 0.05s each
                           >
                             {/* Product Image */}
                             <div className="relative pb-[100%] bg-gray-100 overflow-hidden">
@@ -285,7 +309,7 @@ function AppContent() {
                                 loading="lazy"
                               />
                               {product.onSale && (
-                                <span className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-xs font-medium rounded-full shadow-sm z-10">
+                                <span className={`absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-xs font-medium rounded-full shadow-sm z-10 ${language === 'km' ? 'font-khmer' : 'font-sans'}`}>
                                   {language === 'km' ? 'បញ្ចុះតម្លៃ' : 'Sale'}
                                 </span>
                               )}
@@ -392,6 +416,31 @@ function AppContent() {
           } />
         </Routes>
       </main>
+
+      {/* 👇 ADD BACK TO TOP BUTTON HERE */}
+      {/* Back to Top Button */}
+      {showBackToTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 bg-[#005E7B] text-white p-3 rounded-full shadow-lg hover:bg-[#004b63] hover:scale-110 transition-all duration-300 z-50"
+          aria-label="Back to top"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 10l7-7m0 0l7 7m-7-7v18"
+            />
+          </svg>
+        </button>
+      )}
 
       {/* Footer */}
       {!hideHeader && (

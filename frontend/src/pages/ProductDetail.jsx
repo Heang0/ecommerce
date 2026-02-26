@@ -209,8 +209,8 @@ const ProductDetail = () => {
                                             className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                                         />
                                         {related.onSale && (
-                                            <span className="absolute top-1 right-1 sm:top-2 sm:right-2 bg-red-500 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs sm:text-sm rounded font-sans">
-                                                -{discount}%
+                                            <span className={`absolute top-1 right-1 sm:top-2 sm:right-2 bg-red-500 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs sm:text-sm rounded z-10 ${language === 'km' ? 'font-khmer' : 'font-sans'}`}>
+                                                {language === 'km' ? 'បញ្ចុះតម្លៃ' : 'Sale'}
                                             </span>
                                         )}
                                     </div>

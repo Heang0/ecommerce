@@ -87,61 +87,66 @@ const Sale = () => {
                 <>
                     {/* Product Grid - EXACT same grid as home page */}
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 md:gap-6">
-                        {displayedProducts.map((product) => {
-                            const discount = getDiscountPercentage(product.price, product.salePrice);
-
-                            return (
-                                <div
-                                    key={product._id}
-                                    oonClick={() => window.location.href = `#/product/${product.slug}`}
-                                    className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
-                                >
-                                    {/* Product Image */}
-                                    <div className="relative pb-[100%] bg-gray-200 overflow-hidden">
-                                        <img
-                                            src={product.image?.replace('/upload/', '/upload/f_auto,q_auto,w_400/') || 'https://via.placeholder.com/400x400'}
-                                            alt={product.nameEn}
-                                            className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                                            loading="lazy"
-                                        />
-                                        {/* Sale Badge - exactly like home page */}
-                                        <span className="absolute top-1 right-1 sm:top-2 sm:right-2 bg-red-500 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs sm:text-sm rounded font-sans z-10">
-                                            -{discount}%
+                        {displayedProducts.map((product, index) => (
+                            <div
+                                key={product._id}
+                                onClick={() => navigate(`/product/${product.slug}`)}
+                                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer animate-fadeInUp"
+                                style={{ animationDelay: `${index * 0.05}s` }}  // Stagger by 0.05s each
+                            >
+                                {/* Product Image */}
+                                <div className="relative pb-[100%] bg-gray-100 overflow-hidden">
+                                    <img
+                                        src={product.image?.replace('/upload/', '/upload/f_auto,q_auto,w_400/') || 'https://via.placeholder.com/400x400'}
+                                        alt={product.nameEn}
+                                        className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                                        loading="lazy"
+                                    />
+                                    {product.onSale && (
+                                        <span className={`absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-xs font-medium rounded-full shadow-sm z-10 ${language === 'km' ? 'font-khmer' : 'font-sans'}`}>
+                                            {language === 'km' ? 'បញ្ចុះតម្លៃ' : 'Sale'}
                                         </span>
-                                    </div>
+                                    )}
+                                </div>
 
-                                    {/* Product Info - exactly like home page */}
-                                    <div className="p-2 sm:p-3 md:p-4">
-                                        <h3 className="font-khmer text-base font-medium text-gray-800 mb-1 line-clamp-2">
-                                            {product.nameKm}
-                                        </h3>
-                                        <p className="font-sans text-xs text-gray-600 mb-1 sm:mb-2 line-clamp-1">
-                                            {product.nameEn}
-                                        </p>
-                                        <div className="flex items-center justify-between flex-wrap gap-1">
-                                            <div className="flex items-center gap-1 flex-wrap">
-                                                <span className="font-sans text-xs sm:text-sm md:text-base lg:text-lg font-bold text-red-600">
-                                                    ${product.salePrice}
-                                                </span>
-                                                <span className="font-sans text-xs text-gray-400 line-through">
+                                {/* Product Info */}
+                                <div className="p-3">
+                                    <h3 className="font-khmer text-base font-medium text-gray-800 mb-1 line-clamp-2">
+                                        {product.nameKm}
+                                    </h3>
+                                    <p className="font-sans text-xs text-gray-500 mb-2 line-clamp-1">
+                                        {product.nameEn}
+                                    </p>
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            {product.salePrice ? (
+                                                <div className="flex items-center gap-1">
+                                                    <span className="font-sans text-sm font-bold text-red-600">
+                                                        ${product.salePrice}
+                                                    </span>
+                                                    <span className="font-sans text-xs text-gray-400 line-through">
+                                                        ${product.price}
+                                                    </span>
+                                                </div>
+                                            ) : (
+                                                <span className="font-sans text-sm font-bold text-gray-800">
                                                     ${product.price}
                                                 </span>
-                                            </div>
-                                            {/* Button color - FIXED to match home page [#005E7B] */}
-                                            <button
-                                                className="p-2 bg-[#005E7B] text-white rounded-full hover:bg-[#004b63] hover:scale-110 transition-all duration-200"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    addToCart(product, 1);
-                                                }}
-                                            >
-                                                <ShoppingCart size={18} />
-                                            </button>
+                                            )}
                                         </div>
+                                        <button
+                                            className="p-2 bg-[#005E7B] text-white rounded-full hover:bg-[#004b63] hover:scale-110 transition-all duration-200"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                addToCart(product, 1);
+                                            }}
+                                        >
+                                            <ShoppingCart size={18} />
+                                        </button>
                                     </div>
                                 </div>
-                            );
-                        })}
+                            </div>
+                        ))}
                     </div>
 
                     {/* Load More Button */}

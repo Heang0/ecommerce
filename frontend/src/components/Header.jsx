@@ -179,19 +179,21 @@ const Header = () => {
                         <div className="flex flex-col space-y-3">
                             <a
                                 href="#/"
+                                onClick={() => setIsMenuOpen(false)}  // Add this
                                 className={`px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg text-sm ${language === 'km' ? 'font-khmer' : 'font-sans'} font-medium`}
                             >
                                 {t.home}
                             </a>
                             <a
                                 href="#/sale"
+                                onClick={() => setIsMenuOpen(false)}  // Add this
                                 className={`px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg text-sm ${language === 'km' ? 'font-khmer' : 'font-sans'} font-medium`}
                             >
                                 {t.sale}
                             </a>
-                            {/* Add Contact Link to Mobile Menu */}
                             <a
                                 href="#/contact"
+                                onClick={() => setIsMenuOpen(false)}  // Add this
                                 className={`px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg text-sm ${language === 'km' ? 'font-khmer' : 'font-sans'} font-medium`}
                             >
                                 {t.contact}
@@ -201,7 +203,7 @@ const Header = () => {
                             <button
                                 onClick={() => {
                                     toggleLanguage();
-                                    setIsMenuOpen(false);
+                                    setIsMenuOpen(false);  // Close menu after language change
                                 }}
                                 className="px-3 py-2 flex items-center gap-3 text-gray-700 hover:bg-gray-50 rounded-lg text-sm border-t border-gray-100 pt-3 mt-2"
                             >
