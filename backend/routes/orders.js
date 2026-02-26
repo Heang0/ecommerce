@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 const authMiddleware = require('../middleware/auth');
+const { sendOrderNotification } = require('../services/telegram');
 
 // Helper function to generate order number
 const generateOrderNumber = () => {
@@ -37,6 +38,15 @@ router.post('/', async (req, res) => {
         }
 
         // Generate order number
+        const generateOrderNumber = () => {
+            const date = new Date();
+            const year = date.getFullYear().toString().slice(-2);
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+            return `ORD-${year}${month}${day}-${random}`;
+        };
+
         const orderNumber = generateOrderNumber();
         console.log('Generated order number:', orderNumber);
 
@@ -71,6 +81,15 @@ router.post('/', async (req, res) => {
 
         console.log('✅ Order saved to database:', savedOrder.orderNumber);
 
+        // Send Telegram notification (don't let it break the order if fails)
+        try {
+            await sendOrderNotification(savedOrder);
+            console.log('📱 Telegram notification sent successfully');
+        } catch (notifyError) {
+            console.error('❌ Failed to send Telegram notification:', notifyError.message);
+            // Don't throw error - order still succeeded
+        }
+
         res.status(201).json({
             success: true,
             message: 'Order created successfully',
@@ -78,9 +97,10 @@ router.post('/', async (req, res) => {
                 id: savedOrder._id,
                 orderNumber: savedOrder.orderNumber,
                 total: savedOrder.total,
-                customer: savedOrder.customer,
-                paymentStatus: savedOrder.paymentStatus,
-                createdAt: savedOrder.createdAt
+                customer: {
+                    fullName: savedOrder.customer.fullName,
+                    phone: savedOrder.customer.phone
+                }
             }
         });
 
@@ -92,7 +112,6 @@ router.post('/', async (req, res) => {
         });
     }
 });
-
 // GET single order by ID (public - for order tracking)
 router.get('/:id', async (req, res) => {
     try {

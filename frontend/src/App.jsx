@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import ProtectedRoute from './components/ProtectedRoute';
 import Header from './components/Header';
@@ -32,7 +32,8 @@ function AppContent() {
   const location = useLocation();
   const { addToCart } = useCart();
   const { language } = useLanguage();
-  const { searchQuery } = useSearch(); // Get search from context
+  const { searchQuery } = useSearch();
+  const navigate = useNavigate();
 
   // Route checks
   const isAdminRoute = location.pathname.startsWith('/admin');
@@ -277,7 +278,7 @@ function AppContent() {
                         {displayedProducts.map((product) => (
                           <div
                             key={product._id}
-                            onClick={() => window.location.href = `/product/${product.slug}`}
+                            onClick={() => navigate(`/product/${product.slug}`)}
                             className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer"
                           >
                             {/* Product Image */}
