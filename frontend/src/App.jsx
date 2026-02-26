@@ -315,15 +315,15 @@ function AppContent() {
                               )}
                             </div>
 
-                            {/* Product Info */}
+                            {/* Product Info - Only ONE language based on selection */}
                             <div className="p-3">
-                              <h3 className="font-khmer text-base font-medium text-gray-800 mb-1 line-clamp-2">
-                                {product.nameKm}
+                              {/* Show ONLY Khmer name when language is km, ONLY English when language is en */}
+                              <h3 className={`${language === 'km' ? 'font-khmer' : 'font-sans'} text-base font-medium text-gray-800 mb-1 line-clamp-2`}>
+                                {language === 'km' ? product.nameKm : product.nameEn}
                               </h3>
-                              <p className="font-sans text-xs text-gray-500 mb-2 line-clamp-1">
-                                {product.nameEn}
-                              </p>
-                              <div className="flex items-center justify-between">
+
+                              {/* Price - always shown */}
+                              <div className="flex items-center justify-between mt-2">
                                 <div>
                                   {product.salePrice ? (
                                     <div className="flex items-center gap-1">

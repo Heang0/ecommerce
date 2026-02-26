@@ -102,12 +102,13 @@ const ProductDetail = () => {
 
                 {/* Product Info - padding only on mobile */}
                 <div className="px-4 md:px-0 py-4 md:py-0 space-y-3">
-                    {/* Title */}
+                    {/* Title - Only ONE language */}
                     <div>
-                        <h1 className="font-khmer text-base sm:text-base md:text-lg lg:text-xl font-medium text-gray-800 mb-0.5">
-                            {product.nameKm}
+                        <h1 className={`${language === 'km' ? 'font-khmer' : 'font-sans'} text-base sm:text-base md:text-lg lg:text-xl font-medium text-gray-800 mb-0.5`}>
+                            {language === 'km' ? product.nameKm : product.nameEn}
                         </h1>
-                        <p className="text-sm text-gray-500 font-sans">{product.nameEn}</p>
+                        {/* Optional: Remove or keep the English subtitle */}
+                        {/* <p className="text-sm text-gray-500 font-sans">{product.nameEn}</p> */}
                     </div>
 
                     {/* Price */}
@@ -191,8 +192,8 @@ const ProductDetail = () => {
                         {language === 'km' ? 'ផលិតផលស្រដៀងគ្នា' : 'You May Also Like'}
                     </h2>
 
-                    {/* Grid - edge-to-edge on mobile with NO padding on container */}
-                    <div className="grid grid-cols-2 gap-2 px-0 md:px-0 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 md:gap-6">
+                    {/* Grid - EXACT same as home/sale page */}
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 md:gap-6">
                         {relatedProducts.map((related) => {
                             const discount = getDiscountPercentage(related.price, related.salePrice);
 
@@ -202,6 +203,7 @@ const ProductDetail = () => {
                                     onClick={() => navigate(`/product/${related.slug}`)}
                                     className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
                                 >
+                                    {/* Product Image - same aspect ratio */}
                                     <div className="relative pb-[100%] bg-gray-200 overflow-hidden">
                                         <img
                                             src={related.image?.replace('/upload/', '/upload/f_auto,q_auto,w_200/') || 'https://via.placeholder.com/200x200'}
@@ -210,17 +212,19 @@ const ProductDetail = () => {
                                         />
                                         {related.onSale && (
                                             <span className={`absolute top-1 right-1 sm:top-2 sm:right-2 bg-red-500 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs sm:text-sm rounded z-10 ${language === 'km' ? 'font-khmer' : 'font-sans'}`}>
-                                                {language === 'km' ? 'បញ្ចុះតម្លៃ' : 'Sale'}
+                                                -{discount}%
                                             </span>
                                         )}
                                     </div>
+
+                                    {/* Product Info - EXACT padding from home/sale page */}
                                     <div className="p-2 sm:p-3 md:p-4">
-                                        <h3 className="font-khmer text-base font-medium text-gray-800 mb-1 line-clamp-2">
-                                            {related.nameKm}
+                                        {/* Product Name - Only ONE language with home page sizing */}
+                                        <h3 className={`${language === 'km' ? 'font-khmer' : 'font-sans'} text-xs sm:text-sm md:text-base lg:text-lg font-medium text-gray-800 mb-0.5 sm:mb-1 line-clamp-2`}>
+                                            {language === 'km' ? related.nameKm : related.nameEn}
                                         </h3>
-                                        <p className="font-sans text-xs text-gray-600 mb-1 sm:mb-2 line-clamp-1">
-                                            {related.nameEn}
-                                        </p>
+
+                                        {/* Price - same layout as home/sale page */}
                                         <div className="flex items-center justify-between flex-wrap gap-1">
                                             <div>
                                                 {related.salePrice ? (
@@ -238,14 +242,16 @@ const ProductDetail = () => {
                                                     </span>
                                                 )}
                                             </div>
+
+                                            {/* Add to Cart Button - same size as home page */}
                                             <button
-                                                className="p-2 bg-[#005E7B] text-white rounded-full hover:bg-[#004b63] hover:scale-110 transition-all duration-200"
+                                                className="p-1.5 sm:p-2 bg-[#005E7B] text-white rounded-full hover:bg-[#004b63] hover:scale-110 transition-all duration-200"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     addToCart(related, 1);
                                                 }}
                                             >
-                                                <ShoppingCart size={18} />
+                                                <ShoppingCart size={14} className="sm:w-4 sm:h-4" />
                                             </button>
                                         </div>
                                     </div>
