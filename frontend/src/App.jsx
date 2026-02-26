@@ -1,18 +1,23 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { AuthProvider } from './context/AuthContext';
-import { CartProvider } from './context/CartContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Header from './components/Header';
 import CartSidebar from './components/CartSidebar';
 import Login from './pages/Login';
+import Sale from './pages/Sale';
 import ProductDetail from './pages/ProductDetail';
+import Checkout from './pages/Checkout';
+import PaymentPage from './pages/PaymentPage';
+import OrderSuccess from './pages/OrderSuccess';
 import AddProduct from './pages/admin/AddProduct';
+import { useLanguage } from './context/LanguageContext';
+import { useSearch } from './context/SearchContext';
 import ProductList from './pages/admin/ProductList';
 import EditProduct from './pages/admin/EditProduct';
 import Dashboard from './pages/admin/Dashboard';
 import Categories from './pages/admin/Categories';
-import { ShoppingCart } from 'lucide-react';
+import Orders from './pages/admin/Orders';
+import { ShoppingCart, Search } from 'lucide-react';
 import bannerImage from './assets/bannner.jpg';
 import { fetchProducts } from './services/api';
 import { useCart } from './context/CartContext';
@@ -24,9 +29,48 @@ function AppContent() {
   const [error, setError] = useState(null);
   const location = useLocation();
   const { addToCart } = useCart();
-  const isAdminRoute = location.pathname.startsWith('/admin');
+  const { language } = useLanguage();
+  const { searchQuery } = useSearch(); // Get search from context
 
-  // Fetch products when component mounts
+  // Route checks
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  const isCheckoutRoute = location.pathname === '/checkout';
+  const isProductRoute = location.pathname.startsWith('/product');
+  const isPaymentRoute = location.pathname.startsWith('/payment');
+  const isOrderSuccessRoute = location.pathname.startsWith('/order-success');
+  const hideHeader = isAdminRoute || isCheckoutRoute || isPaymentRoute || isOrderSuccessRoute;
+
+  // Filter states
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [visibleCount, setVisibleCount] = useState(20);
+  const productsPerPage = 20;
+
+  // Filter products by category AND search
+  const filteredProducts = products.filter(product => {
+    // Category filter
+    const categoryMatch = selectedCategory === 'all' || product.category === selectedCategory;
+
+    // Search filter - if no search query, just return category match
+    if (!searchQuery) return categoryMatch;
+
+    // Case-insensitive search in both languages and description
+    const searchLower = searchQuery.toLowerCase();
+    const nameKmMatch = product.nameKm.toLowerCase().includes(searchLower);
+    const nameEnMatch = product.nameEn.toLowerCase().includes(searchLower);
+    const descMatch = product.description?.toLowerCase().includes(searchLower) || false;
+
+    return categoryMatch && (nameKmMatch || nameEnMatch || descMatch);
+  });
+
+  // Pagination
+  const displayedProducts = filteredProducts.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredProducts.length;
+
+  const loadMore = () => {
+    setVisibleCount(prev => prev + productsPerPage);
+  };
+
+  // Load products
   useEffect(() => {
     const loadProducts = async () => {
       try {
@@ -41,11 +85,10 @@ function AppContent() {
         setLoading(false);
       }
     };
-
     loadProducts();
   }, []);
 
-  // Fetch categories
+  // Load categories
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -56,50 +99,95 @@ function AppContent() {
         console.error('Failed to load categories:', err);
       }
     };
-
     loadCategories();
   }, []);
 
-  // Handle category click
+  // Reset pagination when category or search changes
+  useEffect(() => {
+    setVisibleCount(20);
+  }, [selectedCategory, searchQuery]);
+
   const handleCategoryClick = (categoryId) => {
-    // TODO: Filter products by category
-    console.log('Category clicked:', categoryId);
+    setSelectedCategory(categoryId);
+  };
+
+  const clearSearch = () => {
+    // This will be handled by the header component
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Only show header on non-admin routes */}
-      {!isAdminRoute && <Header />}
+      {!hideHeader && <Header />}
       <CartSidebar />
 
-      <main className={`container mx-auto px-4 ${isAdminRoute ? 'pt-0' : 'pt-0'}`}>
+      <main className={`container mx-auto px-4 ${isAdminRoute ? 'pt-0' :
+        isProductRoute ? 'pt-2' :
+          isCheckoutRoute ? 'pt-0' :
+            isPaymentRoute ? 'pt-0' :
+              isOrderSuccessRoute ? 'pt-0' : 'pt-4 sm:pt-6'
+        }`}>
         <Routes>
           <Route path="/" element={
             <>
               {/* Banner Image */}
-              <div className="w-full mb-6 sm:mb-8">
+              <div className="relative w-full mb-6 sm:mb-8 rounded-xl overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#005E7B]/20 to-transparent z-10"></div>
                 <img
                   src={bannerImage}
                   alt="Banner"
-                  className="w-full h-auto object-cover rounded-lg"
+                  className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
                 />
               </div>
 
-              {/* Dynamic Categories from API */}
+              {/* Search Results Indicator */}
+              {searchQuery && (
+                <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Search size={16} className="text-[#005E7B]" />
+                    <p className={`text-sm text-[#005E7B] ${language === 'km' ? 'font-khmer' : 'font-sans'}`}>
+                      {language === 'km'
+                        ? `កំពុងស្វែងរក: "${searchQuery}" (បានរកឃើញ ${filteredProducts.length} មុខទំនិញ)`
+                        : `Searching for: "${searchQuery}" (Found ${filteredProducts.length} items)`}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Categories */}
               {categories.length > 0 && (
                 <div className="mb-6 sm:mb-8">
-                  <h2 className="text-lg font-semibold mb-3 font-khmer">ប្រភេទផលិតផល</h2>
-                  <div className="overflow-x-auto scrollbar-hide pb-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <h2 className="text-lg font-semibold font-khmer text-gray-800">
+                      {language === 'km' ? 'ប្រភេទផលិតផល' : 'Product Categories'}
+                    </h2>
+                  </div>
+                  <div className="overflow-x-auto scrollbar-hide pb-2">
                     <div className="flex space-x-2 min-w-max px-1">
+                      {/* All Products Button */}
+                      <button
+                        onClick={() => handleCategoryClick('all')}
+                        className={`group flex items-center space-x-2 px-4 py-2 rounded-full shadow-sm transition-all whitespace-nowrap ${selectedCategory === 'all'
+                          ? 'bg-[#005E7B] text-white'
+                          : 'bg-white border border-gray-200 hover:border-[#005E7B] hover:bg-[#005E7B]/5'
+                          }`}
+                      >
+                        <span className={`${language === 'km' ? 'font-khmer' : 'font-sans'} text-sm`}>
+                          {language === 'km' ? 'ផលិតផលទាំងអស់' : 'All Products'}
+                        </span>
+                      </button>
+
+                      {/* Category Buttons */}
                       {categories.map((category) => (
                         <button
                           key={category._id}
                           onClick={() => handleCategoryClick(category._id)}
-                          className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 rounded-full shadow-sm hover:shadow-md transition-shadow whitespace-nowrap"
+                          className={`group flex items-center space-x-2 px-4 py-2 rounded-full shadow-sm transition-all whitespace-nowrap ${selectedCategory === category._id
+                            ? 'bg-[#005E7B] text-white'
+                            : 'bg-white border border-gray-200 hover:border-[#005E7B] hover:bg-[#005E7B]/5'
+                            }`}
                         >
-                          <span className="font-khmer text-sm">{category.nameKm}</span>
-                          <span className="font-sans text-xs text-gray-500 hidden sm:inline">
-                            {category.nameEn}
+                          <span className={`${language === 'km' ? 'font-khmer' : 'font-sans'} text-sm`}>
+                            {language === 'km' ? category.nameKm : category.nameEn}
                           </span>
                         </button>
                       ))}
@@ -110,113 +198,141 @@ function AppContent() {
 
               {/* Loading State */}
               {loading && (
-                <div className="flex justify-center items-center py-20">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-10 w-10 border-3 border-gray-200 border-t-[#005E7B]"></div>
+                  <p className="mt-3 text-sm text-gray-500 font-sans">
+                    {language === 'km' ? 'កំពុងផ្ទុក...' : 'Loading...'}
+                  </p>
                 </div>
               )}
 
               {/* Error State */}
               {error && (
-                <div className="text-center py-20">
-                  <p className="text-red-600 font-sans">{error}</p>
+                <div className="text-center py-12 bg-white rounded-xl shadow-sm">
+                  <p className="text-red-500 font-sans text-sm mb-3">{error}</p>
                   <button
                     onClick={() => window.location.reload()}
-                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="px-4 py-2 bg-[#005E7B] text-white rounded-lg hover:bg-[#004b63] transition-colors font-sans text-xs"
                   >
-                    Try Again
+                    {language === 'km' ? 'ព្យាយាមម្តងទៀត' : 'Try Again'}
                   </button>
                 </div>
               )}
 
-              {/* Product Grid - Dynamic from API */}
+              {/* Product Grid */}
               {!loading && !error && (
                 <>
-                  {products.length === 0 ? (
-                    <div className="text-center py-20">
-                      <p className="text-gray-600 font-sans">No products found.</p>
+                  {filteredProducts.length === 0 ? (
+                    <div className="text-center py-16 bg-white rounded-xl shadow-sm">
+                      <Search size={48} className="mx-auto text-gray-300 mb-4" />
+                      <p className={`text-gray-600 text-base mb-2 ${language === 'km' ? 'font-khmer' : 'font-sans'}`}>
+                        {searchQuery
+                          ? (language === 'km'
+                            ? `មិនមានផលិតផលសម្រាប់ "${searchQuery}"`
+                            : `No products found for "${searchQuery}"`)
+                          : (language === 'km' ? 'មិនមានផលិតផលទេ' : 'No products found.')}
+                      </p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
-                      {products.map((product) => (
-                        <div
-                          key={product._id}
-                          className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
-                          onClick={() => window.location.href = `/product/${product._id}`}
-                        >
-                          {/* Product Image */}
-                          <div className="relative pb-[100%] bg-gray-200 overflow-hidden">
-                            <img
-                              src={product.image?.replace('/upload/', '/upload/f_auto,q_auto,w_600/') || 'https://via.placeholder.com/600x600'}
-                              alt={product.nameEn}
-                              className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                              loading="lazy"
-                            />
-                            {product.onSale && (
-                              <span className="absolute top-1 right-1 sm:top-2 sm:right-2 bg-red-500 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 text-xs sm:text-sm rounded font-sans z-10">
-                                Sale
-                              </span>
-                            )}
-                          </div>
+                    <>
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-lg font-semibold font-khmer text-gray-800">
+                          {language === 'km' ? 'ផលិតផលទាំងអស់' : 'All Products'}
+                        </h2>
+                        {searchQuery && (
+                          <span className={`text-sm text-[#005E7B] ${language === 'km' ? 'font-khmer' : 'font-sans'}`}>
+                            {filteredProducts.length} {language === 'km' ? 'មុខទំនិញ' : 'items'}
+                          </span>
+                        )}
+                      </div>
 
-                          {/* Product Info */}
-                          <div className="p-2 sm:p-3 md:p-4">
-                            <h3 className="font-khmer text-sm sm:text-base md:text-lg lg:text-xl mb-0.5 sm:mb-1 line-clamp-2">
-                              {product.nameKm}
-                            </h3>
-                            <p className="font-sans text-xs text-gray-600 mb-1 sm:mb-2 line-clamp-1">
-                              {product.nameEn}
-                            </p>
-                            <div className="flex items-center justify-between flex-wrap gap-1">
-                              <div>
-                                {product.salePrice ? (
-                                  <div className="flex items-center gap-1 flex-wrap">
-                                    <span className="font-sans text-xs sm:text-sm md:text-base lg:text-lg font-bold text-red-600">
-                                      ${product.salePrice}
-                                    </span>
-                                    <span className="font-sans text-xs text-gray-400 line-through">
+                      {/* Product Grid */}
+                      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                        {displayedProducts.map((product) => (
+                          <div
+                            key={product._id}
+                            onClick={() => window.location.href = `/product/${product.slug}`}
+                            className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer"
+                          >
+                            {/* Product Image */}
+                            <div className="relative pb-[100%] bg-gray-100 overflow-hidden">
+                              <img
+                                src={product.image?.replace('/upload/', '/upload/f_auto,q_auto,w_400/') || 'https://via.placeholder.com/400x400'}
+                                alt={product.nameEn}
+                                className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                                loading="lazy"
+                              />
+                              {product.onSale && (
+                                <span className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-xs font-medium rounded-full shadow-sm z-10">
+                                  {language === 'km' ? 'បញ្ចុះតម្លៃ' : 'Sale'}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Product Info */}
+                            <div className="p-3">
+                              <h3 className="font-khmer text-sm font-medium text-gray-800 mb-1 line-clamp-2">
+                                {product.nameKm}
+                              </h3>
+                              <p className="font-sans text-xs text-gray-500 mb-2 line-clamp-1">
+                                {product.nameEn}
+                              </p>
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  {product.salePrice ? (
+                                    <div className="flex items-center gap-1">
+                                      <span className="font-sans text-sm font-bold text-red-600">
+                                        ${product.salePrice}
+                                      </span>
+                                      <span className="font-sans text-xs text-gray-400 line-through">
+                                        ${product.price}
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    <span className="font-sans text-sm font-bold text-gray-800">
                                       ${product.price}
                                     </span>
-                                  </div>
-                                ) : (
-                                  <span className="font-sans text-sm sm:text-base md:text-lg font-bold text-gray-800">
-                                    ${product.price}
-                                  </span>
-                                )}
+                                  )}
+                                </div>
+                                <button
+                                  className="p-1.5 bg-[#005E7B] text-white rounded-full hover:bg-[#004b63] transition-colors"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    addToCart(product, 1);
+                                  }}
+                                >
+                                  <ShoppingCart size={14} />
+                                </button>
                               </div>
-                              <button
-                                className="p-1.5 sm:p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  addToCart(product, 1);
-                                }}
-                              >
-                                <ShoppingCart size={16} className="sm:w-5 sm:h-5" />
-                              </button>
                             </div>
                           </div>
+                        ))}
+                      </div>
+
+                      {/* Load More Button */}
+                      {hasMore && (
+                        <div className="text-center mt-8">
+                          <button
+                            onClick={loadMore}
+                            className="px-8 py-3 bg-[#005E7B] text-white rounded-full hover:bg-[#004b63] transition-all font-sans text-sm font-medium shadow-sm hover:shadow-md hover:scale-105"
+                          >
+                            {language === 'km' ? 'ផ្ទុកបន្ថែម' : 'Load More'} ({displayedProducts.length} / {filteredProducts.length})
+                          </button>
                         </div>
-                      ))}
-                    </div>
+                      )}
+                    </>
                   )}
                 </>
-              )}
-
-              {/* View More Button */}
-              {!loading && !error && products.length > 0 && (
-                <div className="text-center mt-6 sm:mt-8 md:mt-10">
-                  <button className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors font-sans text-sm sm:text-base">
-                    មើលផលិតផលទាំងអស់
-                    <span className="hidden sm:inline ml-2">View All Products</span>
-                  </button>
-                </div>
               )}
             </>
           } />
 
-          {/* Product Detail Route */}
-          <Route path="/product/:id" element={<ProductDetail />} />
-
-          {/* Login Route */}
+          {/* Other Routes */}
+          <Route path="/product/:slug" element={<ProductDetail />} />
+          <Route path="/sale" element={<Sale />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/payment/:id" element={<PaymentPage />} />
+          <Route path="/order-success/:id" element={<OrderSuccess />} />
           <Route path="/login" element={<Login />} />
 
           {/* Admin Routes */}
@@ -225,42 +341,42 @@ function AppContent() {
               <Dashboard />
             </ProtectedRoute>
           } />
-
           <Route path="/admin/categories" element={
             <ProtectedRoute>
               <Categories />
             </ProtectedRoute>
           } />
-
+          <Route path="/admin/orders" element={
+            <ProtectedRoute>
+              <Orders />
+            </ProtectedRoute>
+          } />
           <Route path="/admin/add-product" element={
             <ProtectedRoute>
               <AddProduct />
             </ProtectedRoute>
           } />
-
           <Route path="/admin/products" element={
             <ProtectedRoute>
               <ProductList />
             </ProtectedRoute>
           } />
-
           <Route path="/admin/edit-product/:id" element={
             <ProtectedRoute>
               <EditProduct />
             </ProtectedRoute>
           } />
-
         </Routes>
       </main>
 
-      {/* Only show footer on non-admin routes */}
-      {!isAdminRoute && (
-        <footer className="bg-white border-t mt-8 sm:mt-12 py-4 sm:py-6">
+      {/* Footer */}
+      {!hideHeader && (
+        <footer className="bg-white border-t mt-8 sm:mt-10 py-6">
           <div className="container mx-auto px-4 text-center">
-            <p className="font-khmer text-xs sm:text-sm text-gray-600">
+            <p className="font-khmer text-xs sm:text-sm text-gray-500">
               © 2026 ហាងអនឡាញ
             </p>
-            <p className="font-sans text-xs text-gray-500 mt-1">
+            <p className="font-sans text-xs text-gray-400 mt-1">
               Online Shop. All rights reserved.
             </p>
           </div>
@@ -270,16 +386,11 @@ function AppContent() {
   );
 }
 
-// Main App component with providers
 function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </CartProvider>
-    </AuthProvider>
+    <Router>
+      <AppContent />
+    </Router>
   );
 }
 

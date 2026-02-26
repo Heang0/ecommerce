@@ -59,26 +59,50 @@ const AddProduct = () => {
         setMessage('');
 
         try {
+            // Validate required fields
+            if (!formData.nameKm || !formData.nameEn || !formData.price || !formData.image || !formData.category) {
+                setMessage({ type: 'error', text: 'Please fill all required fields' });
+                setLoading(false);
+                return;
+            }
+
             const productData = {
-                ...formData,
+                nameKm: formData.nameKm,
+                nameEn: formData.nameEn,
                 price: parseFloat(formData.price),
-                salePrice: formData.salePrice ? parseFloat(formData.salePrice) : null
+                salePrice: formData.salePrice ? parseFloat(formData.salePrice) : null,
+                onSale: formData.onSale || false,
+                image: formData.image,
+                category: formData.category,
+                description: formData.description || '',
+                inStock: formData.inStock
             };
 
-            await createProduct(productData);
+            console.log('Sending product data:', productData); // Debug log
+
+            const result = await createProduct(productData);
+            console.log('Product created:', result); // Debug log
+
             setMessage({ type: 'success', text: 'Product added successfully!' });
 
+            // Reset form
             setFormData({
                 nameKm: '', nameEn: '', price: '', salePrice: '',
                 onSale: false, image: '', category: categories[0]?._id || '',
                 description: '', inStock: true
             });
 
+            // Redirect after 2 seconds
             setTimeout(() => {
                 navigate('/admin/products');
-            }, 1500);
+            }, 2000);
+
         } catch (error) {
-            setMessage({ type: 'error', text: 'Failed to add product. Check console.' });
+            console.error('Error creating product:', error);
+            setMessage({
+                type: 'error',
+                text: error.message || 'Failed to add product. Check console.'
+            });
         } finally {
             setLoading(false);
         }
@@ -107,7 +131,7 @@ const AddProduct = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Khmer Name */}
                 <div>
-                    <label className="block font-khmer mb-1">ឈ្មោះជាភាសាខ្មែរ</label>
+                    <label className="block font-khmer mb-1">ឈ្មោះជាភាសាខ្មែរ <span className="text-red-500">*</span></label>
                     <input
                         type="text"
                         name="nameKm"
@@ -120,7 +144,7 @@ const AddProduct = () => {
 
                 {/* English Name */}
                 <div>
-                    <label className="block font-sans mb-1">English Name</label>
+                    <label className="block font-sans mb-1">English Name <span className="text-red-500">*</span></label>
                     <input
                         type="text"
                         name="nameEn"
@@ -133,10 +157,11 @@ const AddProduct = () => {
 
                 {/* Price */}
                 <div>
-                    <label className="block font-sans mb-1">Price ($)</label>
+                    <label className="block font-sans mb-1">Price ($) <span className="text-red-500">*</span></label>
                     <input
                         type="number"
                         step="0.01"
+                        min="0"
                         name="price"
                         value={formData.price}
                         onChange={handleChange}
@@ -152,6 +177,7 @@ const AddProduct = () => {
                         <input
                             type="number"
                             step="0.01"
+                            min="0"
                             name="salePrice"
                             value={formData.salePrice}
                             onChange={handleChange}
@@ -173,7 +199,7 @@ const AddProduct = () => {
 
                 {/* Image Upload */}
                 <div>
-                    <label className="block font-sans mb-1">Product Image</label>
+                    <label className="block font-sans mb-1">Product Image <span className="text-red-500">*</span></label>
                     <CloudinaryUpload
                         onUpload={(url) => setFormData(prev => ({ ...prev, image: url }))}
                         value={formData.image}
@@ -181,9 +207,9 @@ const AddProduct = () => {
                     />
                 </div>
 
-                {/* Dynamic Category Dropdown */}
+                {/* Category Dropdown */}
                 <div>
-                    <label className="block font-sans mb-1">Category</label>
+                    <label className="block font-sans mb-1">Category <span className="text-red-500">*</span></label>
                     <select
                         name="category"
                         value={formData.category}

@@ -14,47 +14,56 @@ export const CartProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
 
-    // Load cart from localStorage on initial render
+    // Load cart from localStorage
     useEffect(() => {
         const savedCart = localStorage.getItem('cart');
+        console.log('🔄 Loading cart from localStorage:', savedCart); // DEBUG
         if (savedCart) {
-            setCart(JSON.parse(savedCart));
+            try {
+                const parsedCart = JSON.parse(savedCart);
+                console.log('✅ Cart loaded:', parsedCart); // DEBUG
+                setCart(parsedCart);
+            } catch (error) {
+                console.error('❌ Error parsing cart:', error);
+            }
+        } else {
+            console.log('📭 No cart found in localStorage'); // DEBUG
         }
     }, []);
 
     // Save cart to localStorage whenever it changes
     useEffect(() => {
+        console.log('💾 Saving cart to localStorage:', cart); // DEBUG
         localStorage.setItem('cart', JSON.stringify(cart));
     }, [cart]);
 
     // Add to cart
     const addToCart = (product, quantity = 1) => {
+        console.log('➕ Adding to cart:', product.nameEn, 'quantity:', quantity); // DEBUG
         setCart(prevCart => {
             const existingItem = prevCart.find(item => item._id === product._id);
 
             if (existingItem) {
-                // Update quantity if item exists
+                console.log('🔄 Updating existing item'); // DEBUG
                 return prevCart.map(item =>
                     item._id === product._id
                         ? { ...item, quantity: item.quantity + quantity }
                         : item
                 );
             } else {
-                // Add new item
+                console.log('🆕 Adding new item'); // DEBUG
                 return [...prevCart, { ...product, quantity }];
             }
         });
-        // Open cart sidebar when adding items
-        setIsOpen(true);
     };
 
-    // Remove from cart
     const removeFromCart = (productId) => {
+        console.log('❌ Removing from cart:', productId); // DEBUG
         setCart(prevCart => prevCart.filter(item => item._id !== productId));
     };
 
-    // Update quantity
     const updateQuantity = (productId, newQuantity) => {
+        console.log('🔄 Updating quantity:', productId, 'to', newQuantity); // DEBUG
         if (newQuantity < 1) {
             removeFromCart(productId);
             return;
@@ -67,12 +76,11 @@ export const CartProvider = ({ children }) => {
         );
     };
 
-    // Clear cart
     const clearCart = () => {
+        console.log('🗑️ Clearing cart'); // DEBUG
         setCart([]);
     };
 
-    // Get cart total
     const getCartTotal = () => {
         return cart.reduce((total, item) => {
             const price = item.salePrice || item.price;
@@ -80,12 +88,10 @@ export const CartProvider = ({ children }) => {
         }, 0);
     };
 
-    // Get item count
     const getItemCount = () => {
         return cart.reduce((count, item) => count + item.quantity, 0);
     };
 
-    // Toggle cart sidebar
     const toggleCart = () => {
         setIsOpen(!isOpen);
     };

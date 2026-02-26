@@ -11,10 +11,10 @@ export const useLanguage = () => {
 };
 
 export const LanguageProvider = ({ children }) => {
-    const [language, setLanguage] = useState('en'); // 'en' or 'km'
+    const [language, setLanguage] = useState('km'); // 'km' or 'en'
 
     const toggleLanguage = () => {
-        setLanguage(prev => prev === 'en' ? 'km' : 'en');
+        setLanguage(prev => prev === 'km' ? 'en' : 'km');
     };
 
     return (
