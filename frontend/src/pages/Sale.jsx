@@ -93,7 +93,7 @@ const Sale = () => {
                             return (
                                 <div
                                     key={product._id}
-                                    onClick={() => navigate(`/product/${product.slug}`)}
+                                    oonClick={() => window.location.href = `#/product/${product.slug}`}
                                     className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
                                 >
                                     {/* Product Image */}

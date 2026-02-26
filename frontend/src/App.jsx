@@ -273,7 +273,7 @@ function AppContent() {
                         {displayedProducts.map((product) => (
                           <div
                             key={product._id}
-                            onClick={() => navigate(`/product/${product.slug}`)}
+                            onClick={() => window.location.href = `#/product/${product.slug}`}
                             className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer"
                           >
                             {/* Product Image */}
