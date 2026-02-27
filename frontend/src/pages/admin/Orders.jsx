@@ -8,17 +8,24 @@ const Orders = () => {
 
     const API_URL = import.meta.env.DEV
         ? 'http://localhost:5000/api'
-        : `${window.location.origin}/api`;
+        : 'https://sabay-tenh.onrender.com/api'; // Hardcode for production
 
     const fetchOrders = async () => {
         const token = localStorage.getItem('token');
         try {
+            console.log('Fetching orders from:', `${API_URL}/orders`); // Debug
             const response = await fetch(`${API_URL}/orders`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const data = await response.json();
+            console.log('Orders fetched:', data); // Debug
             setOrders(data);
         } catch (error) {
             console.error('Error fetching orders:', error);
@@ -130,10 +137,10 @@ const Orders = () => {
                             <tr key={order._id} className="hover:bg-gray-50">
                                 <td className="px-4 py-3 font-sans text-sm font-medium">{order.orderNumber}</td>
                                 <td className="px-4 py-3">
-                                    <div className="font-sans text-sm">{order.customer.fullName}</div>
-                                    <div className="text-xs text-gray-500">{order.customer.phone}</div>
+                                    <div className="font-sans text-sm">{order.customer?.fullName}</div>
+                                    <div className="text-xs text-gray-500">{order.customer?.phone}</div>
                                 </td>
-                                <td className="px-4 py-3 font-sans text-sm font-medium">${order.total.toFixed(2)}</td>
+                                <td className="px-4 py-3 font-sans text-sm font-medium">${order.total?.toFixed(2)}</td>
                                 <td className="px-4 py-3">
                                     <div className="flex flex-col gap-1">
                                         <select
@@ -161,7 +168,7 @@ const Orders = () => {
                                     </select>
                                 </td>
                                 <td className="px-4 py-3 font-sans text-xs text-gray-500">
-                                    {new Date(order.createdAt).toLocaleDateString()}
+                                    {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}
                                 </td>
                                 <td className="px-4 py-3">
                                     <button
@@ -222,13 +229,13 @@ const Orders = () => {
                                 <div className="border-t pt-4">
                                     <p className="text-sm text-gray-500 mb-2">Customer Information</p>
                                     <div className="bg-gray-50 p-3 rounded-lg">
-                                        <p className="font-sans font-medium">{selectedOrder.customer.fullName}</p>
-                                        <p className="font-sans text-sm text-gray-600">{selectedOrder.customer.phone}</p>
-                                        <p className="font-sans text-sm text-gray-600">{selectedOrder.customer.address}</p>
-                                        {selectedOrder.customer.email && (
+                                        <p className="font-sans font-medium">{selectedOrder.customer?.fullName}</p>
+                                        <p className="font-sans text-sm text-gray-600">{selectedOrder.customer?.phone}</p>
+                                        <p className="font-sans text-sm text-gray-600">{selectedOrder.customer?.address}</p>
+                                        {selectedOrder.customer?.email && (
                                             <p className="font-sans text-sm text-gray-600">{selectedOrder.customer.email}</p>
                                         )}
-                                        {selectedOrder.customer.note && (
+                                        {selectedOrder.customer?.note && (
                                             <p className="font-sans text-sm text-gray-600 mt-2 italic">
                                                 Note: {selectedOrder.customer.note}
                                             </p>
@@ -240,7 +247,7 @@ const Orders = () => {
                                 <div className="border-t pt-4">
                                     <p className="text-sm text-gray-500 mb-2">Items</p>
                                     <div className="space-y-3">
-                                        {selectedOrder.items.map((item, idx) => (
+                                        {selectedOrder.items?.map((item, idx) => (
                                             <div key={idx} className="flex gap-3 bg-gray-50 p-2 rounded-lg">
                                                 <img
                                                     src={item.image?.replace('/upload/', '/upload/f_auto,q_auto,w_80/') || 'https://via.placeholder.com/80'}
@@ -267,7 +274,7 @@ const Orders = () => {
                                     <div className="bg-gray-50 p-3 rounded-lg">
                                         <div className="flex justify-between text-sm mb-2">
                                             <span className="font-sans">Subtotal</span>
-                                            <span className="font-sans">${selectedOrder.subtotal.toFixed(2)}</span>
+                                            <span className="font-sans">${selectedOrder.subtotal?.toFixed(2)}</span>
                                         </div>
                                         <div className="flex justify-between text-sm mb-2">
                                             <span className="font-sans">Shipping</span>
@@ -275,22 +282,9 @@ const Orders = () => {
                                         </div>
                                         <div className="flex justify-between font-bold pt-2 border-t">
                                             <span className="font-sans">Total</span>
-                                            <span className="font-sans text-[#005E7B]">${selectedOrder.total.toFixed(2)}</span>
+                                            <span className="font-sans text-[#005E7B]">${selectedOrder.total?.toFixed(2)}</span>
                                         </div>
                                     </div>
-                                </div>
-
-                                {/* Payment Link */}
-                                <div className="border-t pt-4">
-                                    <p className="text-sm text-gray-500 mb-2">Payment Link</p>
-                                    <a
-                                        href="https://link.payway.com.kh/ABAPAYdj419233l"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-sm text-blue-600 hover:underline break-all"
-                                    >
-                                        https://link.payway.com.kh/ABAPAYdj419233l
-                                    </a>
                                 </div>
                             </div>
 

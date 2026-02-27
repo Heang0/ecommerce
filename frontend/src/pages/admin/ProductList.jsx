@@ -20,32 +20,37 @@ const ProductList = () => {
         ? 'http://localhost:5000/api'
         : `${window.location.origin}/api`;
 
-    // Fetch categories function
+    // Fetch categories - FIXED VERSION
     const fetchCategories = async () => {
         try {
             const response = await fetch(`${API_URL}/categories`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             const data = await response.json();
-            return data; // Return data instead of setting state
+            console.log('✅ Categories fetched:', data); // Debug log
+            setCategories(data);
+            return data;
         } catch (err) {
-            console.error('Failed to load categories:', err);
+            console.error('❌ Failed to load categories:', err);
             return [];
         }
     };
+
+    // Load products and categories together - FIXED
     useEffect(() => {
         const loadData = async () => {
             setLoading(true);
             try {
-                const [productsData, categoriesData] = await Promise.all([
-                    fetchProducts(),
-                    fetchCategories()
-                ]);
-
-                console.log('Products loaded:', productsData.length);
-                console.log('Categories loaded:', categoriesData); // Add this
-
+                // Load products first
+                const productsData = await fetchProducts();
                 setProducts(productsData);
                 setFilteredProducts(productsData);
-                setCategories(categoriesData);
+
+                // Then load categories separately
+                const categoriesData = await fetchCategories();
+                console.log('✅ Categories set in state:', categoriesData); // Debug
+
                 setError(null);
             } catch (err) {
                 setError('Failed to load data');
@@ -91,15 +96,16 @@ const ProductList = () => {
     const getCategoryName = (categoryId) => {
         if (!categoryId) return 'Uncategorized';
 
-        // Find the category directly
+        // Add debug log
+        console.log('Looking for category:', categoryId, 'in', categories);
+
         const category = categories.find(c => c._id === categoryId);
 
-        // Return name if found, otherwise show "Unknown" with ID for debugging
         if (category) {
             return category.nameEn;
         } else {
-            // This shouldn't happen now since IDs match!
-            return 'Unknown';
+            // Show partial ID for debugging
+            return `Unknown (${categoryId.slice(-4)})`;
         }
     };
 
