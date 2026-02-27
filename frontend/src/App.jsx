@@ -417,7 +417,6 @@ function AppContent() {
         </Routes>
       </main>
 
-      {/* 👇 ADD BACK TO TOP BUTTON HERE */}
       {/* Back to Top Button */}
       {showBackToTop && (
         <button

@@ -14,6 +14,7 @@ export const CartProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [notification, setNotification] = useState(null);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     // Load cart from localStorage
     useEffect(() => {
@@ -30,13 +31,16 @@ export const CartProvider = ({ children }) => {
         } else {
             console.log('📭 No cart found in localStorage');
         }
+        setIsLoaded(true);
     }, []);
 
     // Save cart to localStorage whenever it changes
     useEffect(() => {
-        console.log('💾 Saving cart to localStorage:', cart);
-        localStorage.setItem('cart', JSON.stringify(cart));
-    }, [cart]);
+        if (isLoaded) {
+            console.log('💾 Saving cart to localStorage:', cart);
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+    }, [cart, isLoaded]);
 
     // Auto-hide notification after 3 seconds
     useEffect(() => {
