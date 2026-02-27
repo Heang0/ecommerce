@@ -87,14 +87,15 @@ const Sale = () => {
                 <>
                     {/* Product Grid - EXACT same as home page */}
                     <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                        {displayedProducts.map((product) => {
+                        {displayedProducts.map((product, index) => {
                             const discount = getDiscountPercentage(product.price, product.salePrice);
 
                             return (
                                 <div
                                     key={product._id}
                                     onClick={() => navigate(`/product/${product.slug}`)}
-                                    className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden cursor-pointer flex flex-col h-full"
+                                    className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden cursor-pointer flex flex-col h-full animate-fadeInUp"
+                                    style={{ animationDelay: `${index * 0.1}s` }}
                                 >
                                     {/* Product Image */}
                                     <div className="relative pb-[100%] bg-gray-200 overflow-hidden flex-shrink-0">
@@ -118,7 +119,7 @@ const Sale = () => {
                                         </h3>
 
                                         {/* Price and Cart - pushed to bottom */}
-                                        <div className="flex items-center justify-between mt-auto pt-2">
+                                        <div className="flex items-center justify-between mt-auto">
                                             <div className="flex items-center gap-1">
                                                 <span className="font-sans text-sm font-bold text-red-600">
                                                     ${product.salePrice}
@@ -134,7 +135,7 @@ const Sale = () => {
                                                     addToCart(product, 1);
                                                 }}
                                             >
-                                                <ShoppingCart size={18} />
+                                                <ShoppingCart size={20} />
                                             </button>
                                         </div>
                                     </div>

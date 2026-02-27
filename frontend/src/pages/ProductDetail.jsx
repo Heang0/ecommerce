@@ -184,7 +184,7 @@ const ProductDetail = () => {
                     {/* Description */}
                     {product.description && (
                         <div className="pt-2">
-                            <p className="text-xs text-gray-600 font-sans leading-relaxed">
+                            <p className="text-sm sm:text-base text-gray-600 font-sans leading-relaxed">
                                 {product.description}
                             </p>
                         </div>
@@ -196,26 +196,24 @@ const ProductDetail = () => {
             {relatedProducts.length > 0 && (
                 <div className="w-full border-t mt-4">
                     {/* Title with mobile padding */}
-                    <div className="flex items-center justify-between px-4 md:px-0 mt-4">
-                        <h2 className="text-base font-semibold font-khmer text-gray-800">
+                    <div className="flex items-center justify-between px-0 md:px-0 mt-4">
+                        <h2 className={`text-xl sm:text-2xl font-semibold mb-3 mt-4 px-0 sm:px-4 md:px-0 ${language === 'km' ? 'font-khmer' : 'font-sans'} text-gray-800`}>
                             {language === 'km' ? 'ផលិតផលស្រដៀងគ្នា' : 'You May Also Like'}
                         </h2>
-                        <span className="text-xs text-gray-400 font-sans">
-                            {relatedProducts.length} {language === 'km' ? 'មុខទំនិញ' : 'items'}
-                        </span>
                     </div>
 
                     {/* Grid - edge-to-edge on mobile (px-0) */}
                     <div className="px-0 md:px-0 mt-3">
                         <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 md:gap-6">
-                            {displayedRelated.map((product) => {
+                            {displayedRelated.map((product, index) => {  // Add index here
                                 const discount = getDiscountPercentage(product.price, product.salePrice);
 
                                 return (
                                     <div
                                         key={product._id}
                                         onClick={() => navigate(`/product/${product.slug}`)}
-                                        className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden cursor-pointer flex flex-col h-full"
+                                        className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden cursor-pointer flex flex-col h-full animate-fadeInUp"
+                                        style={{ animationDelay: `${index * 0.1}s` }}  // Add this line
                                     >
                                         {/* Product Image */}
                                         <div className="relative pb-[100%] bg-gray-200 overflow-hidden flex-shrink-0">
@@ -238,7 +236,7 @@ const ProductDetail = () => {
                                                 {language === 'km' ? product.nameKm : product.nameEn}
                                             </h3>
 
-                                            <div className="flex items-center justify-between mt-auto pt-2">
+                                            <div className="flex items-center justify-between mt-auto">
                                                 <div>
                                                     {product.salePrice ? (
                                                         <div className="flex items-center gap-1">
@@ -262,7 +260,7 @@ const ProductDetail = () => {
                                                         addToCart(product, 1);
                                                     }}
                                                 >
-                                                    <ShoppingCart size={18} />
+                                                    <ShoppingCart size={20} />
                                                 </button>
                                             </div>
                                         </div>

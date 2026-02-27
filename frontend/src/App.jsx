@@ -142,21 +142,26 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Header - hidden on admin/checkout pages */}
       {!hideHeader && <Header />}
+
+      {/* Cart Sidebar */}
       <CartSidebar />
 
-      <main className={`container mx-auto px-4 ${isAdminRoute ? 'pt-0' :
-        isProductRoute ? 'pt-2' :
-          isCheckoutRoute ? 'pt-0' :
-            isPaymentRoute ? 'pt-0' :
-              isOrderSuccessRoute ? 'pt-0' : 'pt-4 sm:pt-6'
+      {/* Main Content - flex-1 makes it take available space */}
+      <main className={`flex-1 container mx-auto px-4 ${isAdminRoute ? 'pt-0 pb-8' :
+        isProductRoute ? 'pt-2 pb-8' :
+          isCheckoutRoute ? 'pt-0 pb-8' :
+            isPaymentRoute ? 'pt-0 pb-8' :
+              isOrderSuccessRoute ? 'pt-0 pb-8' : 'pt-4 sm:pt-6 pb-8'
         }`}>
         <Routes>
+          {/* Home Route */}
           <Route path="/" element={
             <>
               {/* Banner Image */}
-              <div className="relative w-full mb-6 sm:mb-8 rounded-xl overflow-hidden group">
+              <div className="relative w-full mb-4 sm:mb-6 rounded-xl overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#005E7B]/20 to-transparent z-10"></div>
                 <img
                   src={bannerImage}
@@ -167,10 +172,10 @@ function AppContent() {
 
               {/* Search Results Indicator */}
               {searchQuery && (
-                <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center justify-between">
+                <div className="mb-3 sm:mb-4 bg-blue-50 border border-blue-200 rounded-lg p-2 sm:p-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Search size={16} className="text-[#005E7B]" />
-                    <p className={`text-sm text-[#005E7B] ${language === 'km' ? 'font-khmer' : 'font-sans'}`}>
+                    <Search size={14} className="sm:size-16 text-[#005E7B]" />
+                    <p className={`text-xs sm:text-sm text-[#005E7B] ${language === 'km' ? 'font-khmer' : 'font-sans'}`}>
                       {language === 'km'
                         ? `កំពុងស្វែងរក: "${searchQuery}" (បានរកឃើញ ${filteredProducts.length} មុខទំនិញ)`
                         : `Searching for: "${searchQuery}" (Found ${filteredProducts.length} items)`}
@@ -181,9 +186,9 @@ function AppContent() {
 
               {/* Categories */}
               {categories.filter(category => products.some(product => product.category === category._id)).length > 0 && (
-                <div className="mb-6 sm:mb-8">
-                  <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-lg font-semibold font-khmer text-gray-800">
+                <div className="mb-4 sm:mb-6">
+                  <div className="flex items-center justify-between mb-2 sm:mb-3">
+                    <h2 className={`text-xl sm:text-2xl font-semibold ${language === 'km' ? 'font-khmer' : 'font-sans'} text-gray-800`}>
                       {language === 'km' ? 'ប្រភេទផលិតផល' : 'Product Categories'}
                     </h2>
                   </div>
@@ -192,53 +197,46 @@ function AppContent() {
                       {/* All Products Button */}
                       <button
                         onClick={() => handleCategoryClick('all')}
-                        className={`group flex items-center space-x-2 px-4 py-2 rounded-full shadow-sm transition-all whitespace-nowrap ${selectedCategory === 'all'
+                        className={`group flex items-center space-x-2 px-4 sm:px-4 py-2 sm:py-2 rounded-full shadow-sm transition-all whitespace-nowrap text-base sm:text-base ${selectedCategory === 'all'
                           ? 'bg-[#005E7B] text-white'
                           : 'bg-white border border-gray-200 hover:border-[#005E7B] hover:bg-[#005E7B]/5'
                           }`}
                       >
-                        <span className={`${language === 'km' ? 'font-khmer' : 'font-sans'} text-sm`}>
+                        <span className={`${language === 'km' ? 'font-khmer' : 'font-sans'} font-medium`}>
                           {language === 'km' ? 'ផលិតផលទាំងអស់' : 'All Products'}
                         </span>
                       </button>
 
-                      {/* First, create a list of categories that have products */}
-                      {(() => {
-                        // Get unique category IDs that actually have products
-                        const categoriesWithProducts = categories.filter(category =>
-                          products.some(product => product.category === category._id)
-                        );
-
-                        return categoriesWithProducts.map((category) => (
-                          <button
-                            key={category._id}
-                            onClick={() => handleCategoryClick(category._id)}
-                            className={`group flex items-center space-x-2 px-4 py-2 rounded-full shadow-sm transition-all whitespace-nowrap ${selectedCategory === category._id
-                              ? 'bg-[#005E7B] text-white'
-                              : 'bg-white border border-gray-200 hover:border-[#005E7B] hover:bg-[#005E7B]/5'
-                              }`}
-                          >
-                            <span className={`${language === 'km' ? 'font-khmer' : 'font-sans'} text-sm`}>
-                              {language === 'km' ? category.nameKm : category.nameEn}
-                            </span>
-                          </button>
-                        ));
-                      })()}
+                      {/* Category Buttons */}
+                      {categories.filter(category =>
+                        products.some(product => product.category === category._id)
+                      ).map((category) => (
+                        <button
+                          key={category._id}
+                          onClick={() => handleCategoryClick(category._id)}
+                          className={`group flex items-center space-x-2 px-4 sm:px-4 py-2 sm:py-2 rounded-full shadow-sm transition-all whitespace-nowrap text-base sm:text-base ${selectedCategory === category._id
+                            ? 'bg-[#005E7B] text-white'
+                            : 'bg-white border border-gray-200 hover:border-[#005E7B] hover:bg-[#005E7B]/5'
+                            }`}
+                        >
+                          <span className={`${language === 'km' ? 'font-khmer' : 'font-sans'} font-medium`}>
+                            {language === 'km' ? category.nameKm : category.nameEn}
+                          </span>
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Loading State - Modern with Icon */}
+              {/* Loading State */}
               {loading && (
-                <div className="flex flex-col items-center justify-center py-12">
+                <div className="flex flex-col items-center justify-center py-8 sm:py-12">
                   <div className="relative">
-                    {/* Outer ring */}
-                    <div className="w-12 h-12 border-2 border-gray-100 rounded-full"></div>
-                    {/* Spinning inner ring with brand color */}
-                    <div className="absolute top-0 left-0 w-12 h-12 border-2 border-[#005E7B] rounded-full border-t-transparent animate-spin"></div>
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 border-2 border-gray-100 rounded-full"></div>
+                    <div className="absolute top-0 left-0 w-10 h-10 sm:w-12 sm:h-12 border-2 border-[#005E7B] rounded-full border-t-transparent animate-spin"></div>
                   </div>
-                  <p className="mt-4 text-sm text-gray-500 font-sans">
+                  <p className="mt-3 sm:mt-4 text-xs sm:text-sm text-gray-500 font-sans">
                     Loading...
                   </p>
                 </div>
@@ -246,11 +244,11 @@ function AppContent() {
 
               {/* Error State */}
               {error && (
-                <div className="text-center py-12 bg-white rounded-xl shadow-sm">
-                  <p className="text-red-500 font-sans text-sm mb-3">{error}</p>
+                <div className="text-center py-8 sm:py-12 bg-white rounded-xl shadow-sm">
+                  <p className="text-red-500 font-sans text-xs sm:text-sm mb-2 sm:mb-3">{error}</p>
                   <button
                     onClick={() => window.location.reload()}
-                    className="px-4 py-2 bg-[#005E7B] text-white rounded-lg hover:bg-[#004b63] transition-colors font-sans text-xs"
+                    className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#005E7B] text-white rounded-lg hover:bg-[#004b63] transition-colors font-sans text-xs"
                   >
                     {language === 'km' ? 'ព្យាយាមម្តងទៀត' : 'Try Again'}
                   </button>
@@ -261,9 +259,9 @@ function AppContent() {
               {!loading && !error && (
                 <>
                   {filteredProducts.length === 0 ? (
-                    <div className="text-center py-16 bg-white rounded-xl shadow-sm">
-                      <Search size={48} className="mx-auto text-gray-300 mb-4" />
-                      <p className={`text-gray-600 text-base mb-2 ${language === 'km' ? 'font-khmer' : 'font-sans'}`}>
+                    <div className="text-center py-8 sm:py-12 bg-white rounded-xl shadow-sm">
+                      <Search size={32} className="sm:size-48 mx-auto text-gray-300 mb-3 sm:mb-4" />
+                      <p className={`text-gray-600 text-sm sm:text-base mb-2 ${language === 'km' ? 'font-khmer' : 'font-sans'}`}>
                         {searchQuery
                           ? (language === 'km'
                             ? `មិនមានផលិតផលសម្រាប់ "${searchQuery}"`
@@ -273,8 +271,8 @@ function AppContent() {
                     </div>
                   ) : (
                     <>
-                      <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-lg font-semibold font-khmer text-gray-800">
+                      <div className="flex items-center justify-between mb-3 sm:mb-4">
+                        <h2 className={`text-xl sm:text-2xl font-semibold ${language === 'km' ? 'font-khmer' : 'font-sans'} text-gray-800`}>
                           {selectedCategory === 'all'
                             ? (language === 'km' ? 'ផលិតផលទាំងអស់' : 'All Products')
                             : (() => {
@@ -286,44 +284,49 @@ function AppContent() {
                           }
                         </h2>
                         {searchQuery && (
-                          <span className={`text-sm text-[#005E7B] ${language === 'km' ? 'font-khmer' : 'font-sans'}`}>
+                          <span className={`text-xs sm:text-sm text-[#005E7B] ${language === 'km' ? 'font-khmer' : 'font-sans'}`}>
                             {filteredProducts.length} {language === 'km' ? 'មុខទំនិញ' : 'items'}
                           </span>
                         )}
                       </div>
 
                       {/* Product Grid */}
-                      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
                         {displayedProducts.map((product, index) => (
                           <div
                             key={product._id}
                             onClick={() => navigate(`/product/${product.slug}`)}
-                            className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer animate-fadeInUp flex flex-col h-full"
+                            className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer flex flex-col h-full scroll-animate delay-${(index % 8) + 1}`}
+                            style={{ animationDelay: `${index * 0.1}s` }} // Alternative inline style
                           >
+
                             {/* Product Image */}
                             <div className="relative pb-[100%] bg-gray-100 overflow-hidden">
                               <img
-                                src={product.image?.replace('/upload/', '/upload/f_auto,q_auto,w_400/') || 'https://via.placeholder.com/400x400'}
+                                src={product.image?.replace('/upload/', '/upload/f_auto,q_auto,w_300/') || 'https://via.placeholder.com/300x300'}
                                 alt={product.nameEn}
                                 className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                                 loading="lazy"
                               />
                               {product.onSale && (
-                                <span className={`absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-xs font-medium rounded-full shadow-sm z-10 ${language === 'km' ? 'font-khmer' : 'font-sans'}`}>
+                                <span className={`absolute top-1 right-1 sm:top-2 sm:right-2 bg-red-500 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 text-[10px] sm:text-xs font-medium rounded-full shadow-sm z-10 ${language === 'km' ? 'font-khmer' : 'font-sans'}`}>
                                   {language === 'km' ? 'បញ្ចុះតម្លៃ' : 'Sale'}
                                 </span>
                               )}
                             </div>
 
-                            {/* Product Info - Only ONE language based on selection */}
-                            <div className="p-3 flex flex-col flex-grow">
-                              {/* Show ONLY Khmer name when language is km, ONLY English when language is en */}
-                              <h3 className={`${language === 'km' ? 'font-khmer' : 'font-sans'} text-base font-medium text-gray-800 mb-1 line-clamp-2`}>
+                            {/* Product Info */}
+                            <div className="p-2 sm:p-3 flex flex-col flex-grow">
+                              <h3 className={`${language === 'km' ? 'font-khmer' : 'font-sans'} text-base sm:text-sm md:text-base font-medium text-gray-800 mb-1 line-clamp-2`}>
                                 {language === 'km' ? product.nameKm : product.nameEn}
                               </h3>
-
-                              {/* Price - always shown */}
-                              <div className="flex items-center justify-between mt-auto pt-2">
+                              {/* Add description here */}
+                              {product.description && (
+                                <p className="text-xs text-gray-500 mb-2 line-clamp-2 font-sans">
+                                  {product.description}
+                                </p>
+                              )}
+                              <div className="flex items-center justify-between mt-auto">
                                 <div>
                                   {product.salePrice ? (
                                     <div className="flex items-center gap-1">
@@ -347,7 +350,7 @@ function AppContent() {
                                     addToCart(product, 1);
                                   }}
                                 >
-                                  <ShoppingCart size={18} />
+                                  <ShoppingCart size={20} />
                                 </button>
                               </div>
                             </div>
@@ -357,10 +360,10 @@ function AppContent() {
 
                       {/* Load More Button */}
                       {hasMore && (
-                        <div className="text-center mt-8">
+                        <div className="text-center mt-4 sm:mt-6 md:mt-8">
                           <button
                             onClick={loadMore}
-                            className="px-8 py-3 bg-[#005E7B] text-white rounded-full hover:bg-[#004b63] transition-all font-sans text-sm font-medium shadow-sm hover:shadow-md hover:scale-105"
+                            className="px-4 sm:px-6 py-2 sm:py-2.5 bg-[#005E7B] text-white rounded-full hover:bg-[#004b63] transition-all font-sans text-xs sm:text-sm font-medium shadow-sm hover:shadow-md hover:scale-105"
                           >
                             {language === 'km' ? 'ផ្ទុកបន្ថែម' : 'Load More'} ({displayedProducts.length} / {filteredProducts.length})
                           </button>
@@ -421,32 +424,21 @@ function AppContent() {
       {showBackToTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-8 right-8 bg-[#005E7B] text-white p-3 rounded-full shadow-lg hover:bg-[#004b63] hover:scale-110 transition-all duration-300 z-50"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-[#005E7B] text-white p-2 sm:p-2.5 rounded-full shadow-lg hover:bg-[#004b63] hover:scale-110 transition-all duration-300 z-50"
           aria-label="Back to top"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 10l7-7m0 0l7 7m-7-7v18"
-            />
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
           </svg>
         </button>
       )}
 
-      {/* Footer */}
+      {/* Footer - stays at bottom on short pages */}
       {!hideHeader && (
-        <footer className="bg-white border-t mt-8 sm:mt-10 py-6">
+        <footer className="bg-white border-t py-3">
           <div className="container mx-auto px-4 text-center">
             <p className="font-khmer text-xs sm:text-sm text-gray-500">
-              © 2026  Sabay Tenh. All rights reserved.
+              © 2026 Sabay Tenh. All rights reserved.
             </p>
           </div>
         </footer>

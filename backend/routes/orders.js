@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 const authMiddleware = require('../middleware/auth');
+const { sendOrderReceipt } = require('../services/emailService');
 const { sendOrderNotification } = require('../services/telegram');
 
 // Helper function to generate order number
@@ -38,15 +39,6 @@ router.post('/', async (req, res) => {
         }
 
         // Generate order number
-        const generateOrderNumber = () => {
-            const date = new Date();
-            const year = date.getFullYear().toString().slice(-2);
-            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const day = date.getDate().toString().padStart(2, '0');
-            const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-            return `ORD-${year}${month}${day}-${random}`;
-        };
-
         const orderNumber = generateOrderNumber();
         console.log('Generated order number:', orderNumber);
 
@@ -81,13 +73,20 @@ router.post('/', async (req, res) => {
 
         console.log('✅ Order saved to database:', savedOrder.orderNumber);
 
-        // Send Telegram notification (don't let it break the order if fails)
+        // Send email receipt
+        try {
+            await sendOrderReceipt(savedOrder);
+            console.log('📧 Email receipt sent to:', savedOrder.customer.email);
+        } catch (emailError) {
+            console.error('❌ Failed to send email receipt:', emailError.message);
+        }
+
+        // Send Telegram notification
         try {
             await sendOrderNotification(savedOrder);
-            console.log('📱 Telegram notification sent successfully');
-        } catch (notifyError) {
-            console.error('❌ Failed to send Telegram notification:', notifyError.message);
-            // Don't throw error - order still succeeded
+            console.log('📱 Telegram notification sent');
+        } catch (telegramError) {
+            console.error('❌ Telegram notification error:', telegramError.message);
         }
 
         res.status(201).json({
@@ -99,6 +98,7 @@ router.post('/', async (req, res) => {
                 total: savedOrder.total,
                 customer: {
                     fullName: savedOrder.customer.fullName,
+                    email: savedOrder.customer.email,
                     phone: savedOrder.customer.phone
                 }
             }
@@ -112,6 +112,7 @@ router.post('/', async (req, res) => {
         });
     }
 });
+
 // GET single order by ID (public - for order tracking)
 router.get('/:id', async (req, res) => {
     try {

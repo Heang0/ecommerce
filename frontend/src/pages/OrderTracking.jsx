@@ -52,7 +52,7 @@ const OrderTracking = () => {
     const orderTotal = orderData.total || 0;
 
     return (
-        <div className="max-w-2xl mx-auto px-4 py-12">
+        <div className="max-w-2xl mx-auto px-4 pt-2 pb-8">
             <button
                 onClick={() => navigate('/')}
                 className="flex items-center gap-2 text-gray-600 hover:text-[#005E7B] mb-6"
