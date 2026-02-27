@@ -73,21 +73,16 @@ router.post('/', async (req, res) => {
 
         console.log('✅ Order saved to database:', savedOrder.orderNumber);
 
-        // Send email receipt
-        try {
-            await sendOrderReceipt(savedOrder);
-            console.log('📧 Email receipt sent to:', savedOrder.customer.email);
-        } catch (emailError) {
-            console.error('❌ Failed to send email receipt:', emailError.message);
+        // Fire and forget - NO AWAIT, NO TRY/CATCH
+        if (savedOrder.customer.email) {
+            sendOrderReceipt(savedOrder).catch(err =>
+                console.error('Background email error:', err.message)
+            );
         }
 
-        // Send Telegram notification
-        try {
-            await sendOrderNotification(savedOrder);
-            console.log('📱 Telegram notification sent');
-        } catch (telegramError) {
-            console.error('❌ Telegram notification error:', telegramError.message);
-        }
+        sendOrderNotification(savedOrder).catch(err =>
+            console.error('Background telegram error:', err.message)
+        );
 
         res.status(201).json({
             success: true,
