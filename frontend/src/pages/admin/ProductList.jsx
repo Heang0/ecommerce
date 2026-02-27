@@ -91,13 +91,12 @@ const ProductList = () => {
     const getCategoryName = (categoryId) => {
         if (!categoryId) return 'Uncategorized';
 
-        // Check if categories is still loading or empty
-        if (!categories || categories.length === 0) {
-            return 'Loading...';
+        // If categories exist, find the category
+        if (categories && categories.length > 0) {
+            const category = categories.find(c => c._id === categoryId);
+            if (category) return category.nameEn;
         }
-
-        const category = categories.find(c => c._id === categoryId);
-        return category ? category.nameEn : 'Unknown';
+        return 'Unknown';
     };
 
     // Handle delete
