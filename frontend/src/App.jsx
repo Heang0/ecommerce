@@ -197,7 +197,7 @@ function AppContent() {
               {/* New Arrivals Section */}
               {newArrivals.length > 0 && (
                 <ProductScrollSection
-                  title={language === 'km' ? '🆕 ផលិតផលថ្មី' : '🆕 New Arrivals'}
+                  title={language === 'km' ? ' ផលិតផលថ្មី' : ' New Arrivals'}
                   products={newArrivals}
                 />
               )}
@@ -205,7 +205,7 @@ function AppContent() {
               {/* On Sale Section */}
               {onSaleProducts.length > 0 && (
                 <ProductScrollSection
-                  title={language === 'km' ? '🔥 កំពុងបញ្ចុះតម្លៃ' : '🔥 On Sale'}
+                  title={language === 'km' ? ' កំពុងបញ្ចុះតម្លៃ' : ' On Sale'}
                   products={onSaleProducts}
                   viewAllLink="/sale"
                 />
