@@ -1,8 +1,7 @@
-// Auto-detect API URL based on environment
-const isDev = import.meta.env.DEV;
-const API_URL = isDev
-  ? 'http://localhost:5000/api'
-  : 'https://sabay-tenh.onrender.com/api';
+const VITE_API_URL = import.meta.env.VITE_API_URL;
+const API_URL = VITE_API_URL
+  ? (VITE_API_URL.endsWith('/') ? VITE_API_URL.slice(0, -1) : VITE_API_URL)
+  : (import.meta.env.DEV ? 'http://localhost:5000/api' : 'https://sabay-tenh.onrender.com/api');
 
 
 // ========== PUBLIC ROUTES ==========
