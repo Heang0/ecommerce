@@ -12,6 +12,7 @@ const PaymentPage = () => {
     const [paymentStatus, setPaymentStatus] = useState('pending');
     const [timeLeft, setTimeLeft] = useState(180); // 3 minutes in seconds
     const [statusMessage, setStatusMessage] = useState('');
+    const [checkNowToken, setCheckNowToken] = useState(0);
     const BAKONG_LOGO_URL = 'https://bakong.nbc.gov.kh/images/favicon.png';
     const MIN_POLL_INTERVAL_MS = 6000;
     const ERROR_POLL_INTERVAL_MS = 15000;
@@ -37,9 +38,6 @@ const PaymentPage = () => {
                             Math.floor((new Date(data.order.qrExpiresAt).getTime() - Date.now()) / 1000)
                         );
                         setTimeLeft(secondsRemaining);
-                        if (secondsRemaining === 0) {
-                            setPaymentStatus('expired');
-                        }
                     }
                 }
             } catch (error) {
@@ -74,7 +72,11 @@ const PaymentPage = () => {
                     setTimeout(() => navigate(`/order-success/${id}`), 2000);
                 } else if (data.status === 'pending') {
                     setPaymentStatus('pending');
-                    setStatusMessage(data.message || '');
+                    setStatusMessage(
+                        data.message || (data.qrExpired
+                            ? 'QR expired. Waiting for final payment confirmation...'
+                            : '')
+                    );
                     nextDelayMs = Math.max(
                         MIN_POLL_INTERVAL_MS,
                         Number(data.retryAfterMs) || MIN_POLL_INTERVAL_MS
@@ -115,7 +117,7 @@ const PaymentPage = () => {
             isCancelled = true;
             clearTimeout(timeoutId);
         };
-    }, [id, navigate, paymentStatus, API_URL, clearCart]);
+    }, [id, navigate, paymentStatus, API_URL, clearCart, checkNowToken]);
 
     // Countdown timer
     useEffect(() => {
@@ -134,12 +136,6 @@ const PaymentPage = () => {
         }, 1000);
         return () => clearInterval(timer);
     }, [paymentStatus]);
-
-    useEffect(() => {
-        if (timeLeft === 0 && paymentStatus === 'pending') {
-            setPaymentStatus('expired');
-        }
-    }, [timeLeft, paymentStatus]);
 
     if (loading) {
         return (
@@ -267,6 +263,13 @@ const PaymentPage = () => {
                                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#005E7B]"></div>
                                     <span className="text-xs font-bold text-[#005E7B] font-sans">Waiting for payment confirmation...</span>
                                 </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setCheckNowToken(prev => prev + 1)}
+                                    className="text-[11px] px-3 py-1.5 rounded-full border border-[#005E7B]/20 text-[#005E7B] bg-white hover:bg-[#005E7B]/5 font-sans"
+                                >
+                                    I already paid, check now
+                                </button>
                                 {statusMessage && (
                                     <p className="text-[11px] text-amber-600 font-sans text-center px-3">{statusMessage}</p>
                                 )}

@@ -219,16 +219,16 @@ const CartSidebar = () => {
                             </div>
                         </div>
 
-                        {/* ABA Payway (Static) */}
+                        {/* Bakong KHQR (Static) */}
                         <div className="border rounded-lg p-4 mb-6">
                             <h4 className={`font-bold mb-3 ${language === 'km' ? 'font-khmer' : 'font-sans'}`}>
-                                ABA Payway
+                                Bakong KHQR
                             </h4>
                             <div className="space-y-3">
                                 <div className="flex items-center gap-2 p-3 border rounded bg-blue-50">
                                     <input type="radio" name="payment" checked readOnly />
                                     <span className={`${language === 'km' ? 'font-khmer' : 'font-sans'}`}>
-                                        ABA Payway (Demo)
+                                        Bakong KHQR (Demo)
                                     </span>
                                 </div>
                                 <p className={`text-sm text-gray-600 ${language === 'km' ? 'font-khmer' : 'font-sans'}`}>

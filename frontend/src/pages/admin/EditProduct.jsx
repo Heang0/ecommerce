@@ -50,13 +50,13 @@ const EditProduct = () => {
     useEffect(() => {
         const loadProduct = async () => {
             try {
-                setLoading(true);``
+                setLoading(true);
                 const data = await fetchProductById(id);
                 setFormData({
                     nameKm: data.nameKm || '',
                     nameEn: data.nameEn || '',
-                    price: data.price || '',
-                    salePrice: data.salePrice || '',
+                    price: data.price !== undefined && data.price !== null ? String(data.price) : '',
+                    salePrice: data.salePrice !== undefined && data.salePrice !== null ? String(data.salePrice) : '',
                     onSale: data.onSale || false,
                     image: data.image || '',
                     images: data.images || [],
@@ -77,6 +77,18 @@ const EditProduct = () => {
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
+
+        if (name === 'price' || name === 'salePrice') {
+            const cleaned = value
+                .replace(/[^0-9.]/g, '')
+                .replace(/(\..*)\./g, '$1');
+            setFormData(prev => ({
+                ...prev,
+                [name]: cleaned
+            }));
+            return;
+        }
+
         setFormData(prev => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : value
@@ -165,8 +177,9 @@ const EditProduct = () => {
                 <div>
                     <label className="block font-sans mb-1 text-sm">Price ($)</label>
                     <input
-                        type="number"
-                        step="0.01"
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="0.00"
                         name="price"
                         value={formData.price}
                         onChange={handleChange}
@@ -180,8 +193,9 @@ const EditProduct = () => {
                     <div className="flex-1">
                         <label className="block font-sans mb-1 text-sm">Sale Price ($)</label>
                         <input
-                            type="number"
-                            step="0.01"
+                            type="text"
+                            inputMode="decimal"
+                            placeholder="0.00"
                             name="salePrice"
                             value={formData.salePrice}
                             onChange={handleChange}

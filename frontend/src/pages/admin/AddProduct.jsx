@@ -49,6 +49,18 @@ const AddProduct = () => {
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
+
+        if (name === 'price' || name === 'salePrice') {
+            const cleaned = value
+                .replace(/[^0-9.]/g, '')
+                .replace(/(\..*)\./g, '$1');
+            setFormData(prev => ({
+                ...prev,
+                [name]: cleaned
+            }));
+            return;
+        }
+
         setFormData(prev => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : value
@@ -159,9 +171,9 @@ const AddProduct = () => {
                 <div>
                     <label className="block font-sans mb-1">Price ($) <span className="text-red-500">*</span></label>
                     <input
-                        type="number"
-                        step="0.01"
-                        min="0"
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="0.00"
                         name="price"
                         value={formData.price}
                         onChange={handleChange}
@@ -175,9 +187,9 @@ const AddProduct = () => {
                     <div className="flex-1">
                         <label className="block font-sans mb-1">Sale Price ($)</label>
                         <input
-                            type="number"
-                            step="0.01"
-                            min="0"
+                            type="text"
+                            inputMode="decimal"
+                            placeholder="0.00"
                             name="salePrice"
                             value={formData.salePrice}
                             onChange={handleChange}

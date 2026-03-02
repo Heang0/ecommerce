@@ -487,7 +487,6 @@ function AppContent() {
               </p>
               <div className="flex items-center gap-2 text-xs text-gray-500 font-sans">
                 <span>Payment:</span>
-                <span className="px-2 py-0.5 bg-white/10 rounded text-white text-[10px]">ABA</span>
                 <span className="px-2 py-0.5 bg-white/10 rounded text-white text-[10px]">KHQR</span>
               </div>
             </div>

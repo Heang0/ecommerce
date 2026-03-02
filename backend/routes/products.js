@@ -143,8 +143,14 @@ router.put('/:id', authMiddleware, async (req, res) => {
         // Update fields
         if (req.body.nameKm) product.nameKm = req.body.nameKm;
         if (req.body.nameEn) product.nameEn = req.body.nameEn;
-        if (req.body.price) product.price = parseFloat(req.body.price);
-        if (req.body.salePrice !== undefined) product.salePrice = req.body.salePrice ? parseFloat(req.body.salePrice) : null;
+        if (req.body.price !== undefined) {
+            product.price = parseFloat(req.body.price);
+        }
+        if (req.body.salePrice !== undefined) {
+            product.salePrice = req.body.salePrice !== '' && req.body.salePrice !== null
+                ? parseFloat(req.body.salePrice)
+                : null;
+        }
         if (req.body.onSale !== undefined) product.onSale = req.body.onSale;
         if (req.body.image) product.image = req.body.image;
         if (req.body.images) product.images = req.body.images; // Update images array

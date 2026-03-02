@@ -163,16 +163,15 @@ const OrderTracking = () => {
                     {order.paymentStatus !== 'paid' && (
                         <div className="mt-8 p-6 bg-blue-50/50 rounded-xl border border-blue-100 text-center">
                             <h3 className="text-sm font-bold text-blue-900 mb-2">Complete Payment</h3>
-                            <p className="text-xs text-blue-700 mb-4">You can pay with ABA Pay for instant processing.</p>
-                            <a
-                                href={`https://link.payway.com.kh/ABAPAYdj419233l?amount=${order.total}&orderId=${order.orderNumber}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                            <p className="text-xs text-blue-700 mb-4">Pay with Bakong KHQR for instant processing.</p>
+                            <button
+                                type="button"
+                                onClick={() => navigate(`/payment/${order.id || id}`)}
                                 className="inline-flex items-center gap-2 bg-[#005E7B] text-white px-8 py-3 rounded-lg text-sm font-bold hover:shadow-lg transition-all active:scale-95"
                             >
                                 <CreditCard size={18} />
-                                Pay with ABA Now
-                            </a>
+                                Pay with Bakong KHQR
+                            </button>
                         </div>
                     )}
                 </div>

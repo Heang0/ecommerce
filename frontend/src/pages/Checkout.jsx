@@ -5,7 +5,6 @@ import { useLanguage } from '../context/LanguageContext';
 import { useUser } from '../context/UserContext';
 import { createOrder, validateCoupon } from '../services/api';
 import { ArrowLeft, Truck, Phone, MapPin, Mail, FileText, CreditCard, Shield, Lock, ExternalLink, Tag } from 'lucide-react';
-import abaLogo from '../assets/ABA BANK.svg';
 
 const Checkout = () => {
     const navigate = useNavigate();
@@ -122,17 +121,8 @@ const Checkout = () => {
 
             // Check if response has order data
             if (response.order && response.order.id) {
-                if (paymentMethod === 'ABA Payway Link') {
-                    // Create dynamic payment link with amount
-                    const baseLink = 'https://link.payway.com.kh/ABAPAYdj419233l';
-                    const paymentLink = `${baseLink}?amount=${finalTotal}&orderId=${response.order.orderNumber}`;
-                    window.open(paymentLink, '_blank');
-                    alert(`Order placed! Please complete payment of $${finalTotal.toFixed(2)} using the link that opened.`);
-                    navigate(`/order-tracking/${response.order.id}`);
-                } else {
-                    // Bakong - redirect to our internal payment page
-                    navigate(`/payment/${response.order.id}`);
-                }
+                // Bakong only - redirect to internal payment page
+                navigate(`/payment/${response.order.id}`);
             } else {
                 // Fallback if no order ID
                 alert('Order placed successfully!');
@@ -283,24 +273,6 @@ const Checkout = () => {
                                         </div>
                                     </div>
 
-                                    {/* ABA Payway Option */}
-                                    <div
-                                        onClick={() => setPaymentMethod('ABA Payway Link')}
-                                        className={`relative border-2 rounded-xl p-4 cursor-pointer transition-all ${paymentMethod === 'ABA Payway Link' ? 'border-[#005E7B] bg-blue-50 shadow-sm' : 'border-gray-100 bg-white hover:border-gray-200'}`}
-                                    >
-                                        <div className="flex items-center gap-4">
-                                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'ABA Payway Link' ? 'border-[#005E7B]' : 'border-gray-300'}`}>
-                                                {paymentMethod === 'ABA Payway Link' && <div className="w-2.5 h-2.5 rounded-full bg-[#005E7B]"></div>}
-                                            </div>
-                                            <div className="flex-1">
-                                                <div className="flex items-center justify-between">
-                                                    <h3 className="font-bold font-sans text-sm">ABA Payway</h3>
-                                                    <img src={abaLogo} alt="ABA" className="h-4 opacity-70" />
-                                                </div>
-                                                <p className="text-xs text-gray-500 font-sans mt-0.5">Redirect to secure payment link</p>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
 

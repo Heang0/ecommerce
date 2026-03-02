@@ -13,6 +13,8 @@ const bakongService = require('../services/bakong');
 const paymentCheckCache = new Map();
 const PAYMENT_CHECK_MIN_INTERVAL_MS = 10000;
 const PAYMENT_CHECK_TRANSIENT_MS = 30000;
+const QR_EXPIRED_RETRY_MS = 30000;
+const QR_CONFIRMATION_GRACE_MS = 10 * 60 * 1000;
 
 // Helper function to generate order number
 const generateOrderNumber = () => {
@@ -72,6 +74,8 @@ router.post('/', async (req, res) => {
             } catch (e) { console.error('Coupon increment error:', e); }
         }
 
+        const selectedPaymentMethod = 'Bakong KHQR';
+
         // Create order data
         const orderData = {
             orderNumber: orderNumber,
@@ -95,7 +99,7 @@ router.post('/', async (req, res) => {
             })),
             subtotal: req.body.subtotal,
             total: req.body.total,
-            paymentMethod: req.body.paymentMethod || 'ABA Payway Link',
+            paymentMethod: selectedPaymentMethod,
             paymentStatus: 'pending',
             orderStatus: 'pending'
         };
@@ -240,9 +244,14 @@ router.get('/:id/check-payment', async (req, res) => {
             return res.json({ status: 'paid' });
         }
 
-        // Enforce QR expiration (real 3-min expiry)
-        const now = new Date();
-        if (order.qrExpiresAt && new Date(order.qrExpiresAt) < now) {
+        // Keep checking for a short grace window after QR expiry.
+        // This avoids false "expired" when upstream verification is temporarily blocked.
+        const nowMs = Date.now();
+        const qrExpiresAtMs = order.qrExpiresAt ? new Date(order.qrExpiresAt).getTime() : null;
+        const isQrExpired = Number.isFinite(qrExpiresAtMs) && qrExpiresAtMs < nowMs;
+        const isPastConfirmationGrace = isQrExpired && (nowMs - qrExpiresAtMs) > QR_CONFIRMATION_GRACE_MS;
+
+        if (isPastConfirmationGrace) {
             if (order.paymentStatus !== 'failed') {
                 order.paymentStatus = 'failed';
                 await order.save();
@@ -264,7 +273,6 @@ router.get('/:id/check-payment', async (req, res) => {
         }
 
         const cacheKey = String(order._id);
-        const nowMs = Date.now();
         const cached = paymentCheckCache.get(cacheKey);
         if (cached && nowMs < cached.nextCheckAt) {
             return res.json(cached.response);
@@ -289,16 +297,31 @@ router.get('/:id/check-payment', async (req, res) => {
             }
             statusResponse = {
                 status: 'pending',
+                qrExpired: isQrExpired,
                 retryAfterMs: nextCheckDelayMs,
                 ...(result.transient ? { message: result.error } : {})
             };
+
+            if (isQrExpired) {
+                nextCheckDelayMs = Math.max(nextCheckDelayMs, QR_EXPIRED_RETRY_MS);
+                statusResponse.retryAfterMs = nextCheckDelayMs;
+                if (!statusResponse.message) {
+                    statusResponse.message = 'QR has expired. Verifying latest payment status...';
+                }
+            }
         } else {
             nextCheckDelayMs = PAYMENT_CHECK_TRANSIENT_MS;
             statusResponse = {
-                status: 'error',
+                status: isQrExpired ? 'pending' : 'error',
+                qrExpired: isQrExpired,
                 retryAfterMs: nextCheckDelayMs,
                 message: result.error || 'Payment check failed'
             };
+
+            if (isQrExpired) {
+                nextCheckDelayMs = Math.max(nextCheckDelayMs, QR_EXPIRED_RETRY_MS);
+                statusResponse.retryAfterMs = nextCheckDelayMs;
+            }
         }
 
         paymentCheckCache.set(cacheKey, {

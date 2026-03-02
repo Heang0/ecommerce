@@ -13,7 +13,7 @@ const OrderSuccess = () => {
         const loadOrder = async () => {
             try {
                 const data = await fetchOrderById(id);
-                setOrder(data);
+                setOrder(data.order || data);
             } catch (error) {
                 console.error('Error fetching order:', error);
             } finally {
@@ -41,10 +41,10 @@ const OrderSuccess = () => {
                 {order && (
                     <div className="bg-gray-50 p-4 rounded-lg mb-6 text-left">
                         <p className="text-sm font-sans mb-2">
-                            Order Number: <span className="font-bold">{order.orderNumber}</span>
+                            Order Number: <span className="font-bold">{order.orderNumber || 'N/A'}</span>
                         </p>
                         <p className="text-sm text-gray-600 font-sans">
-                            We'll contact you at {order.customer.phone} for delivery.
+                            We'll contact you at {order?.customer?.phone || 'your phone number'} for delivery.
                         </p>
                     </div>
                 )}

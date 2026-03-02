@@ -33,9 +33,6 @@ ${itemsList}
 
 💳 **Payment:** ${order.paymentMethod}
 ⏰ **Time:** ${new Date().toLocaleString('en-KH', { timeZone: 'Asia/Phnom_Penh' })}
-
-🔗 **Payment Link:**
-https://link.payway.com.kh/ABAPAYdj419233l?amount=${order.total}&orderId=${order.orderNumber}
         `;
 
         // Send to Telegram group

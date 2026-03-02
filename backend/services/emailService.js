@@ -137,12 +137,8 @@ const generateReceiptHTML = (order) => {
                             <table width="100%" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td>
-                                        <p style="margin: 0 0 8px 0; color: #005E7B; font-weight: 600; font-size: 15px;">Complete Your Payment</p>
-                                        <p style="margin: 0 0 12px 0; color: #333; font-size: 14px;">Click the link below to pay via ABA:</p>
-                                        <a href="https://link.payway.com.kh/ABAPAYdj419233l?amount=${order.total}&orderId=${order.orderNumber}" 
-                                           style="display: inline-block; background: #005E7B; color: white; padding: 10px 24px; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 500;">
-                                            Pay Now with ABA
-                                        </a>
+                                        <p style="margin: 0 0 8px 0; color: #005E7B; font-weight: 600; font-size: 15px;">Payment Method: Bakong KHQR</p>
+                                        <p style="margin: 0; color: #333; font-size: 14px;">Please complete payment by scanning the Bakong KHQR code on your payment page.</p>
                                     </td>
                                 </tr>
                             </table>
