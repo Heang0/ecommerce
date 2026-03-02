@@ -5,10 +5,46 @@ const User = require('../models/User');
 // Initialize Firebase Admin SDK
 let serviceAccount;
 
+function parseServiceAccount(rawValue) {
+    if (!rawValue) return null;
+
+    const candidates = [
+        rawValue.trim(),
+        rawValue.trim().replace(/^["']|["']$/g, ''),
+        rawValue.trim().replace(/\r\n/g, '\n')
+    ];
+
+    for (const candidate of candidates) {
+        try {
+            let parsed = JSON.parse(candidate);
+            // Handle accidentally double-encoded JSON strings.
+            if (typeof parsed === 'string') {
+                parsed = JSON.parse(parsed);
+            }
+            if (parsed && typeof parsed === 'object') {
+                if (parsed.private_key && typeof parsed.private_key === 'string') {
+                    parsed.private_key = parsed.private_key.replace(/\\n/g, '\n');
+                }
+                return parsed;
+            }
+        } catch (e) {
+            // try next candidate
+        }
+    }
+
+    throw new Error('Invalid FIREBASE_SERVICE_ACCOUNT JSON format');
+}
+
 try {
     if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-        // Parse the JSON string from environment variable (for Render/Production)
-        serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+        try {
+            // Parse JSON from environment variable (Render/Production/local env)
+            serviceAccount = parseServiceAccount(process.env.FIREBASE_SERVICE_ACCOUNT);
+        } catch (parseErr) {
+            // Fallback to local key file for development if env string is malformed.
+            console.warn('Invalid FIREBASE_SERVICE_ACCOUNT in env, falling back to serviceAccountKey.json');
+            serviceAccount = require(path.join(__dirname, '..', 'serviceAccountKey.json'));
+        }
     } else {
         // Fallback to local file (for Development)
         serviceAccount = require(path.join(__dirname, '..', 'serviceAccountKey.json'));

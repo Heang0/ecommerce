@@ -53,16 +53,22 @@ app.disable('x-powered-by');
 
 const allowedOrigins = [
   'http://localhost:5173',
+  'http://localhost:4173',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:4173',
   'https://sabay-tenh-kh.onrender.com',
   'https://sabay-tenh.onrender.com'
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    const isLocalDevOrigin = /^http:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(origin || '');
+
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || isLocalDevOrigin) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      // Do not throw; just deny CORS silently to avoid noisy server errors.
+      callback(null, false);
     }
   },
   credentials: true

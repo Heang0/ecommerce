@@ -12,6 +12,7 @@ class BakongService {
             : 'https://sit-api-bakong.nbc.gov.kh/v1';
         this.isMock = process.env.BAKONG_MOCK === 'true';
         this.exchangeRate = Number(process.env.BAKONG_EXCHANGE_RATE || 4100);
+        this.currency = (process.env.BAKONG_CURRENCY || 'USD').toUpperCase();
         this.khqr = new BakongKHQR();
     }
 
@@ -40,7 +41,12 @@ class BakongService {
             if (!Number.isFinite(amountInUSD) || amountInUSD <= 0) {
                 throw new Error('Invalid order total for KHQR generation');
             }
-            const amountInKHR = Math.round(amountInUSD * this.exchangeRate);
+            const isUSD = this.currency !== 'KHR';
+            const khqrCurrency = isUSD ? khqrData.currency.usd : khqrData.currency.khr;
+            const khqrAmount = isUSD
+                ? Number(amountInUSD.toFixed(2))
+                : Math.round(amountInUSD * this.exchangeRate);
+            const amountInKHR = isUSD ? null : khqrAmount;
 
             // Set QR valid for 3 minutes
             const validUntil = new Date(Date.now() + 3 * 60 * 1000).toISOString();
@@ -54,6 +60,7 @@ class BakongService {
                     md5: 'mock_md5_' + Math.random().toString(36).substring(2, 10),
                     amountUSD: amountInUSD,
                     amountKHR: amountInKHR,
+                    currency: isUSD ? 'USD' : 'KHR',
                     validUntil: validUntil
                 };
             }
@@ -63,8 +70,8 @@ class BakongService {
             }
 
             const optionalData = {
-                currency: khqrData.currency.khr,
-                amount: amountInKHR,
+                currency: khqrCurrency,
+                amount: khqrAmount,
                 billNumber: order.orderNumber,
                 mobileNumber: String(order.customer?.phone || '').replace(/^0+/, '855'),
                 storeLabel: 'Online Store',
@@ -102,6 +109,7 @@ class BakongService {
                 md5,
                 amountUSD: amountInUSD,
                 amountKHR: amountInKHR,
+                currency: isUSD ? 'USD' : 'KHR',
                 validUntil: validUntil
             };
         } catch (error) {

@@ -106,8 +106,10 @@ router.post('/', async (req, res) => {
                     order.paymentMd5 = qrResult.md5;
                     order.paymentStatus = 'pending';
                     order.paymentData = {
+                        currency: qrResult.currency || 'USD',
+                        amountUSD: qrResult.amountUSD,
                         amountKHR: qrResult.amountKHR,
-                        exchangeRate: 4100,
+                        exchangeRate: qrResult.amountKHR ? 4100 : null,
                         qrCode: qrResult.qrCode,
                         qrImage: qrResult.qrImage
                     };
