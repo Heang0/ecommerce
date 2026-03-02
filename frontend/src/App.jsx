@@ -233,42 +233,59 @@ function AppContent() {
 
               {/* Categories */}
               {categories.filter(category => products.some(product => product.category === category._id)).length > 0 && (
-                <div className="mb-4 sm:mb-6">
-                  <div className="flex items-center justify-between mb-2 sm:mb-3">
-                    <h2 className={`text-xl sm:text-2xl font-semibold ${language === 'km' ? 'font-khmer' : 'font-sans'} text-gray-800`}>
-                      {language === 'km' ? 'ប្រភេទផលិតផល' : 'Product Categories'}
-                    </h2>
+                <div className="mb-6 sm:mb-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex flex-col">
+                      <h2 className={`text-xl sm:text-2xl font-bold tracking-tight ${language === 'km' ? 'font-khmer' : 'font-sans'} text-gray-900`}>
+                        {language === 'km' ? 'ប្រភេទផលិតផល' : 'Product Categories'}
+                      </h2>
+                      <div className="h-1 w-12 bg-[#005E7B] rounded-full mt-1" />
+                    </div>
                   </div>
-                  <div className="overflow-x-auto scrollbar-hide pb-2">
-                    <div className="flex space-x-2 min-w-max px-1">
+
+                  <div className="relative group">
+                    <div className="overflow-x-auto scrollbar-hide pb-4 flex items-center gap-3 px-1">
+                      {/* All Products Tab */}
                       <button
                         onClick={() => handleCategoryClick('all')}
-                        className={`group flex items-center space-x-2 px-4 py-2 rounded-full shadow-sm transition-all whitespace-nowrap text-base ${selectedCategory === 'all'
-                          ? 'bg-[#005E7B] text-white'
-                          : 'bg-white border border-gray-200 hover:border-[#005E7B] hover:bg-[#005E7B]/5'
+                        className={`relative flex items-center gap-2 px-6 py-3 rounded-2xl transition-all duration-300 whitespace-nowrap text-sm font-semibold
+                          ${selectedCategory === 'all'
+                            ? 'bg-gradient-to-r from-[#005E7B] to-teal-500 text-white shadow-lg shadow-teal-200/50 scale-105'
+                            : 'bg-white border border-gray-100 text-gray-500 hover:border-[#005E7B]/30 hover:bg-gray-50'
                           }`}
                       >
-                        <span className={`${language === 'km' ? 'font-khmer' : 'font-sans'} font-medium`}>
+                        <span className={language === 'km' ? 'font-khmer' : 'font-sans'}>
                           {language === 'km' ? 'ផលិតផលទាំងអស់' : 'All Products'}
                         </span>
+                        {selectedCategory === 'all' && (
+                          <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                        )}
                       </button>
+
+                      {/* Map Categories */}
                       {categories.filter(category =>
                         products.some(product => product.category === category._id)
                       ).map((category) => (
                         <button
                           key={category._id}
                           onClick={() => handleCategoryClick(category._id)}
-                          className={`group flex items-center space-x-2 px-4 py-2 rounded-full shadow-sm transition-all whitespace-nowrap text-base ${selectedCategory === category._id
-                            ? 'bg-[#005E7B] text-white'
-                            : 'bg-white border border-gray-200 hover:border-[#005E7B] hover:bg-[#005E7B]/5'
+                          className={`relative flex items-center gap-2 px-6 py-3 rounded-2xl transition-all duration-300 whitespace-nowrap text-sm font-semibold
+                            ${selectedCategory === category._id
+                              ? 'bg-gradient-to-r from-[#005E7B] to-teal-500 text-white shadow-lg shadow-teal-200/50 scale-105'
+                              : 'bg-white border border-gray-100 text-gray-500 hover:border-[#005E7B]/30 hover:bg-gray-50'
                             }`}
                         >
-                          <span className={`${language === 'km' ? 'font-khmer' : 'font-sans'} font-medium`}>
+                          <span className={language === 'km' ? 'font-khmer' : 'font-sans'}>
                             {language === 'km' ? category.nameKm : category.nameEn}
                           </span>
+                          {selectedCategory === category._id && (
+                            <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                          )}
                         </button>
                       ))}
                     </div>
+                    {/* Subtle Fade indicators for scroll */}
+                    <div className="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-gray-50 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </div>
               )}

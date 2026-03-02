@@ -154,7 +154,7 @@ const Register = () => {
                                     onChange={handleChange}
                                     placeholder={km ? 'ឈ្មោះរបស់អ្នក' : 'Your full name'}
                                     autoComplete="name"
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#005E7B]/30 focus:border-[#005E7B] transition-all"
+                                    className={`w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#005E7B]/30 focus:border-[#005E7B] transition-all ${km ? 'font-khmer' : ''}`}
                                 />
                             </div>
 
@@ -170,7 +170,7 @@ const Register = () => {
                                     onChange={handleChange}
                                     placeholder="you@example.com"
                                     autoComplete="email"
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#005E7B]/30 focus:border-[#005E7B] transition-all"
+                                    className={`w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#005E7B]/30 focus:border-[#005E7B] transition-all ${km ? 'font-khmer' : ''}`}
                                 />
                             </div>
 
@@ -187,7 +187,7 @@ const Register = () => {
                                         onChange={handleChange}
                                         placeholder={km ? 'ពាក្យសម្ងាត់' : 'Min. 6 characters'}
                                         autoComplete="new-password"
-                                        className="w-full px-4 py-3 pr-11 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#005E7B]/30 focus:border-[#005E7B] transition-all"
+                                        className={`w-full px-4 py-3 pr-11 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#005E7B]/30 focus:border-[#005E7B] transition-all ${km ? 'font-khmer' : ''}`}
                                     />
                                     <button
                                         type="button"
@@ -226,7 +226,7 @@ const Register = () => {
                                         onChange={handleChange}
                                         placeholder={km ? 'បញ្ជាក់ពាក្យសម្ងាត់' : 'Repeat your password'}
                                         autoComplete="new-password"
-                                        className={`w-full px-4 py-3 pr-11 rounded-xl border bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 transition-all ${form.confirm && form.confirm !== form.password
+                                        className={`w-full px-4 py-3 pr-11 rounded-xl border bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 transition-all ${km ? 'font-khmer' : ''} ${form.confirm && form.confirm !== form.password
                                             ? 'border-red-300 focus:ring-red-200 focus:border-red-400'
                                             : form.confirm && form.confirm === form.password
                                                 ? 'border-green-300 focus:ring-green-200 focus:border-green-400'
@@ -243,7 +243,7 @@ const Register = () => {
                                 </div>
                                 {/* Match indicator */}
                                 {form.confirm && form.password && (
-                                    <p className={`text-xs mt-1 ${form.confirm === form.password ? 'text-green-500' : 'text-red-500'}`}>
+                                    <p className={`text-xs mt-1 ${km ? 'font-khmer' : ''} ${form.confirm === form.password ? 'text-green-500' : 'text-red-500'}`}>
                                         {form.confirm === form.password
                                             ? (km ? 'ពាក្យសម្ងាត់ត្រូវគ្នា ✓' : 'Passwords match ✓')
                                             : (km ? 'ពាក្យសម្ងាត់មិនត្រូវគ្នា' : 'Passwords do not match')}
@@ -253,7 +253,7 @@ const Register = () => {
 
                             {/* Error Message */}
                             {error && (
-                                <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
+                                <div className={`flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3 ${km ? 'font-khmer' : ''}`}>
                                     <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                                     </svg>
@@ -265,7 +265,7 @@ const Register = () => {
                             <button
                                 type="submit"
                                 disabled={submitting || loading}
-                                className="w-full py-3 rounded-xl bg-gradient-to-r from-[#005E7B] to-teal-500 text-white font-semibold text-sm shadow-lg shadow-teal-200 hover:shadow-teal-300 hover:from-[#004d66] hover:to-teal-600 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                                className={`w-full py-3 rounded-xl bg-gradient-to-r from-[#005E7B] to-teal-500 text-white font-semibold text-sm shadow-lg shadow-teal-200 hover:shadow-teal-300 hover:from-[#004d66] hover:to-teal-600 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed ${km ? 'font-khmer' : ''}`}
                             >
                                 {submitting
                                     ? (km ? 'កំពុងបង្កើតគណនី...' : 'Creating account...')
@@ -276,7 +276,7 @@ const Register = () => {
                         {/* Divider */}
                         <div className="flex items-center gap-3 my-6">
                             <div className="flex-1 h-px bg-gray-100" />
-                            <span className="text-xs text-gray-400 font-medium uppercase tracking-wider">
+                            <span className={`text-xs text-gray-400 font-medium uppercase tracking-wider ${km ? 'font-khmer' : ''}`}>
                                 {km ? 'ឬ' : 'or'}
                             </span>
                             <div className="flex-1 h-px bg-gray-100" />
@@ -290,7 +290,7 @@ const Register = () => {
                             className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 disabled:opacity-50 group"
                         >
                             <GoogleIcon />
-                            <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                            <span className={`text-sm font-medium text-gray-700 group-hover:text-gray-900 ${km ? 'font-khmer' : ''}`}>
                                 {loading && !submitting
                                     ? (km ? 'កំពុងបង្កើត...' : 'Creating account...')
                                     : (km ? 'ចុះឈ្មោះដោយប្រើ Google' : 'Sign up with Google')}
@@ -300,7 +300,7 @@ const Register = () => {
                         {/* Login link */}
                         <p className={`text-center text-sm text-gray-500 mt-6 ${km ? 'font-khmer' : ''}`}>
                             {km ? 'មានគណនីរួចហើយ?' : 'Already have an account?'}{' '}
-                            <Link to="/user-login" className="font-semibold text-[#005E7B] hover:text-teal-600 transition-colors">
+                            <Link to="/user-login" className={`font-semibold text-[#005E7B] hover:text-teal-600 transition-colors ${km ? 'font-khmer' : ''}`}>
                                 {km ? 'ចូលគណនី' : 'Sign in'}
                             </Link>
                         </p>

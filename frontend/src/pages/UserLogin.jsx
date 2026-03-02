@@ -106,12 +106,12 @@ const UserLogin = () => {
 
                             {resetSent ? (
                                 <div className="text-center space-y-6">
-                                    <div className="bg-green-50 text-green-700 p-4 rounded-xl border border-green-100 text-sm">
+                                    <div className={`bg-green-50 text-green-700 p-4 rounded-xl border border-green-100 text-sm ${km ? 'font-khmer' : ''}`}>
                                         {km ? 'តំណភ្ជាប់ត្រូវបានផ្ញើ! សូមពិនិត្យមើលអ៊ីមែលរបស់អ្នក។' : 'Reset link sent! Please check your email inbox.'}
                                     </div>
                                     <button
                                         onClick={() => setIsResetMode(false)}
-                                        className="w-full py-3 rounded-xl bg-[#005E7B] text-white font-semibold text-sm shadow-lg hover:bg-[#004d66] transition-all"
+                                        className={`w-full py-3 rounded-xl bg-[#005E7B] text-white font-semibold text-sm shadow-lg hover:bg-[#004d66] transition-all ${km ? 'font-khmer' : ''}`}
                                     >
                                         {km ? 'ត្រឡប់ទៅការចូល' : 'Back to Login'}
                                     </button>
@@ -130,7 +130,7 @@ const UserLogin = () => {
                                                 setResetEmail(e.target.value);
                                             }}
                                             placeholder="email@example.com"
-                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#005E7B]/30 focus:border-[#005E7B] transition-all"
+                                            className={`w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#005E7B]/30 focus:border-[#005E7B] transition-all ${km ? 'font-khmer' : ''}`}
                                         />
                                     </div>
                                     {error && (
@@ -142,14 +142,14 @@ const UserLogin = () => {
                                         <button
                                             type="submit"
                                             disabled={submitting}
-                                            className="w-full py-3 rounded-xl bg-gradient-to-r from-[#005E7B] to-teal-500 text-white font-semibold text-sm shadow-lg hover:shadow-teal-300 transition-all disabled:opacity-60"
+                                            className={`w-full py-3 rounded-xl bg-gradient-to-r from-[#005E7B] to-teal-500 text-white font-semibold text-sm shadow-lg hover:shadow-teal-300 transition-all disabled:opacity-60 ${km ? 'font-khmer' : ''}`}
                                         >
                                             {submitting ? (km ? 'កំពុងផ្ញើ...' : 'Sending...') : (km ? 'ផ្ញើតំណភ្ជាប់ប្តូរពាក្យសម្ងាត់' : 'Send Reset Link')}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => setIsResetMode(false)}
-                                            className="text-sm text-gray-500 hover:text-[#005E7B] transition-colors"
+                                            className={`text-sm text-gray-500 hover:text-[#005E7B] transition-colors ${km ? 'font-khmer' : ''}`}
                                         >
                                             {km ? 'ត្រឡប់ទៅវិញ' : 'Cancel'}
                                         </button>
@@ -226,7 +226,7 @@ const UserLogin = () => {
                                     onChange={handleChange}
                                     placeholder={km ? 'email@example.com' : 'you@example.com'}
                                     autoComplete="email"
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#005E7B]/30 focus:border-[#005E7B] transition-all"
+                                    className={`w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#005E7B]/30 focus:border-[#005E7B] transition-all ${km ? 'font-khmer' : ''}`}
                                 />
                             </div>
                             <div>
@@ -250,7 +250,7 @@ const UserLogin = () => {
                                         onChange={handleChange}
                                         placeholder={km ? 'ពាក្យសម្ងាត់' : 'Enter your password'}
                                         autoComplete="current-password"
-                                        className="w-full px-4 py-3 pr-11 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#005E7B]/30 focus:border-[#005E7B] transition-all"
+                                        className={`w-full px-4 py-3 pr-11 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#005E7B]/30 focus:border-[#005E7B] transition-all ${km ? 'font-khmer' : ''}`}
                                     />
                                     <button
                                         type="button"
@@ -262,7 +262,7 @@ const UserLogin = () => {
                                 </div>
                             </div>
                             {error && (
-                                <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
+                                <div className={`flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3 ${km ? 'font-khmer' : ''}`}>
                                     <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                         <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                                     </svg>
@@ -272,7 +272,7 @@ const UserLogin = () => {
                             <button
                                 type="submit"
                                 disabled={submitting || loading}
-                                className="w-full py-3 rounded-xl bg-gradient-to-r from-[#005E7B] to-teal-500 text-white font-semibold text-sm shadow-lg shadow-teal-200 hover:shadow-teal-300 hover:from-[#004d66] hover:to-teal-600 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                                className={`w-full py-3 rounded-xl bg-gradient-to-r from-[#005E7B] to-teal-500 text-white font-semibold text-sm shadow-lg shadow-teal-200 hover:shadow-teal-300 hover:from-[#004d66] hover:to-teal-600 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed ${km ? 'font-khmer' : ''}`}
                             >
                                 {submitting
                                     ? (km ? 'កំពុងចូល...' : 'Signing in...')
@@ -281,7 +281,7 @@ const UserLogin = () => {
                         </form>
                         <div className="flex items-center gap-3 my-6">
                             <div className="flex-1 h-px bg-gray-100" />
-                            <span className="text-xs text-gray-400 font-medium uppercase tracking-wider">
+                            <span className={`text-xs text-gray-400 font-medium uppercase tracking-wider ${km ? 'font-khmer' : ''}`}>
                                 {km ? 'ឬ' : 'or'}
                             </span>
                             <div className="flex-1 h-px bg-gray-100" />
@@ -293,7 +293,7 @@ const UserLogin = () => {
                             className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 disabled:opacity-50 group"
                         >
                             <GoogleIcon />
-                            <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                            <span className={`text-sm font-medium text-gray-700 group-hover:text-gray-900 ${km ? 'font-khmer' : ''}`}>
                                 {loading && !submitting
                                     ? (km ? 'កំពុងចូល...' : 'Signing in...')
                                     : (km ? 'ចូលដោយប្រើ Google' : 'Continue with Google')}
@@ -301,7 +301,7 @@ const UserLogin = () => {
                         </button>
                         <p className={`text-center text-sm text-gray-500 mt-6 ${km ? 'font-khmer' : ''}`}>
                             {km ? 'មិនទាន់មានគណនី?' : "Don't have an account?"}{' '}
-                            <Link to="/register" className="font-semibold text-[#005E7B] hover:text-teal-600 transition-colors">
+                            <Link to="/register" className={`font-semibold text-[#005E7B] hover:text-teal-600 transition-colors ${km ? 'font-khmer' : ''}`}>
                                 {km ? 'ចុះឈ្មោះ' : 'Create one'}
                             </Link>
                         </p>

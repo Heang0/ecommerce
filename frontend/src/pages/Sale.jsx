@@ -87,7 +87,7 @@ const Sale = () => {
 
                     <div className="relative p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6">
                         <div className="text-center sm:text-left">
-                            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-bold mb-4 uppercase tracking-widest border border-white/30">
+                            <div className={`inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-bold mb-4 uppercase tracking-widest border border-white/30 ${km ? 'font-khmer' : ''}`}>
                                 <Zap size={14} className="fill-white" />
                                 {km ? 'ការផ្តល់ជូនពិសេស' : 'Exclusive Offer'}
                             </div>
@@ -117,7 +117,7 @@ const Sale = () => {
                         </p>
                         <button
                             onClick={() => navigate('/')}
-                            className="inline-flex items-center gap-2 px-8 py-3 bg-[#005E7B] text-white rounded-2xl hover:bg-[#004b63] transition-all font-bold shadow-lg shadow-blue-100 hover:shadow-blue-200 active:scale-95"
+                            className={`inline-flex items-center gap-2 px-8 py-3 bg-[#005E7B] text-white rounded-2xl hover:bg-[#004b63] transition-all font-bold shadow-lg shadow-blue-100 hover:shadow-blue-200 active:scale-95 ${km ? 'font-khmer' : 'font-sans'}`}
                         >
                             <ArrowLeft size={18} />
                             {km ? 'ត្រឡប់ទៅទំព័រដើម' : 'Back to Home'}
@@ -137,7 +137,7 @@ const Sale = () => {
                             <div className="text-center mt-12">
                                 <button
                                     onClick={loadMore}
-                                    className="inline-flex items-center justify-center px-12 py-4 bg-white border border-gray-200 text-gray-800 rounded-2xl hover:bg-gray-50 hover:border-[#005E7B] hover:text-[#005E7B] transition-all font-bold text-sm shadow-sm hover:shadow-md active:scale-95 group"
+                                    className={`inline-flex items-center justify-center px-12 py-4 bg-white border border-gray-200 text-gray-800 rounded-2xl hover:bg-gray-50 hover:border-[#005E7B] hover:text-[#005E7B] transition-all font-bold text-sm shadow-sm hover:shadow-md active:scale-95 group ${km ? 'font-khmer' : 'font-sans'}`}
                                 >
                                     <span className="mr-2 group-hover:rotate-180 transition-transform duration-500">🔄</span>
                                     {km ? 'បង្ហាញបន្ថែម' : 'Load More Products'}

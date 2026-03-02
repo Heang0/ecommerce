@@ -1,9 +1,55 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const mongoSanitize = require('mongo-sanitize');
+const hpp = require('hpp');
 require('dotenv').config();
 
 const app = express();
+
+// 🛡️ 1. Security Headers (Hacks & XSS protection)
+app.use(helmet());
+
+// 🧼 2. Input Sanitization (NoSQL Injection protection)
+app.use((req, res, next) => {
+  req.body = mongoSanitize(req.body);
+  req.query = mongoSanitize(req.query);
+  req.params = mongoSanitize(req.params);
+  next();
+});
+
+// 🚦 3. Rate Limiting (DDoS protection)
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per window
+  message: {
+    success: false,
+    message: 'Too many requests from this IP, please try again after 15 minutes'
+  }
+});
+
+// Apply global limiter to all routes
+app.use('/api/', globalLimiter);
+
+// 🔒 4. Auth-specific Rate Limiting (Brute-force protection)
+const authLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 20, // Limit each IP to 20 auth attempts per hour
+  message: {
+    success: false,
+    message: 'Too many login attempts, please try again later'
+  }
+});
+app.use('/api/auth/', authLimiter);
+app.use('/api/users/google-auth', authLimiter);
+
+// 🛡️ 5. HTTP Parameter Pollution protection
+app.use(hpp());
+
+// 🚫 6. Hide Express (Small layer of obscurity)
+app.disable('x-powered-by');
 
 const allowedOrigins = [
   'http://localhost:5173',
@@ -22,7 +68,7 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: '10kb' })); // Limit body size to prevent huge payload attacks
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)

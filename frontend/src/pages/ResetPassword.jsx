@@ -111,12 +111,12 @@ const ResetPassword = () => {
 
                         {status === 'success' && (
                             <div className="text-center space-y-6">
-                                <div className="bg-green-50 text-green-700 p-4 rounded-xl border border-green-100 text-sm">
+                                <div className={`bg-green-50 text-green-700 p-4 rounded-xl border border-green-100 text-sm ${km ? 'font-khmer' : ''}`}>
                                     {km ? 'ពាក្យសម្ងាត់របស់អ្នកត្រូវបានប្តូររួចរាល់។ អ្នកនឹងត្រូវបានបញ្ជូនទៅកាន់ទំព័រចូលក្នុងពេលឆាប់ៗនេះ។' : 'Your password has been updated. You will be redirected to the login page shortly.'}
                                 </div>
                                 <button
                                     onClick={() => navigate('/user-login')}
-                                    className="w-full py-3 rounded-xl bg-[#005E7B] text-white font-semibold text-sm shadow-lg hover:bg-[#004d66] transition-all"
+                                    className={`w-full py-3 rounded-xl bg-[#005E7B] text-white font-semibold text-sm shadow-lg hover:bg-[#004d66] transition-all ${km ? 'font-khmer' : ''}`}
                                 >
                                     {km ? 'ទៅកាន់ទំព័រចូល' : 'Go to Login Now'}
                                 </button>
@@ -125,12 +125,12 @@ const ResetPassword = () => {
 
                         {status === 'error' && (
                             <div className="text-center space-y-6">
-                                <div className="bg-red-50 text-red-700 p-4 rounded-xl border border-red-100 text-sm">
+                                <div className={`bg-red-50 text-red-700 p-4 rounded-xl border border-red-100 text-sm ${km ? 'font-khmer' : ''}`}>
                                     {error}
                                 </div>
                                 <button
                                     onClick={() => navigate('/user-login')}
-                                    className="w-full py-3 rounded-xl bg-gray-100 text-gray-700 font-semibold text-sm hover:bg-gray-200 transition-all"
+                                    className={`w-full py-3 rounded-xl bg-gray-100 text-gray-700 font-semibold text-sm hover:bg-gray-200 transition-all ${km ? 'font-khmer' : ''}`}
                                 >
                                     {km ? 'ត្រឡប់ទៅការចូល' : 'Back to Login'}
                                 </button>
@@ -149,7 +149,7 @@ const ResetPassword = () => {
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             placeholder="••••••••"
-                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#005E7B]/30 focus:border-[#005E7B] transition-all"
+                                            className={`w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#005E7B]/30 focus:border-[#005E7B] transition-all ${km ? 'font-khmer' : ''}`}
                                             required
                                         />
                                         <button
@@ -171,13 +171,13 @@ const ResetPassword = () => {
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
                                         placeholder="••••••••"
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#005E7B]/30 focus:border-[#005E7B] transition-all"
+                                        className={`w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#005E7B]/30 focus:border-[#005E7B] transition-all ${km ? 'font-khmer' : ''}`}
                                         required
                                     />
                                 </div>
 
                                 {error && (
-                                    <div className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
+                                    <div className={`text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3 ${km ? 'font-khmer' : ''}`}>
                                         {error}
                                     </div>
                                 )}
@@ -185,7 +185,7 @@ const ResetPassword = () => {
                                 <button
                                     type="submit"
                                     disabled={status === 'loading'}
-                                    className="w-full py-3 rounded-xl bg-gradient-to-r from-[#005E7B] to-teal-500 text-white font-semibold text-sm shadow-lg hover:shadow-teal-300 transition-all disabled:opacity-60"
+                                    className={`w-full py-3 rounded-xl bg-gradient-to-r from-[#005E7B] to-teal-500 text-white font-semibold text-sm shadow-lg hover:shadow-teal-300 transition-all disabled:opacity-60 ${km ? 'font-khmer' : ''}`}
                                 >
                                     {status === 'loading' ? (km ? 'កំពុងរក្សាទុក...' : 'Updating...') : (km ? 'រក្សាទុកពាក្យសម្ងាត់ថ្មី' : 'Reset Password')}
                                 </button>

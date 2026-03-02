@@ -42,6 +42,10 @@ const productSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    brand: {
+        type: String,
+        default: 'Generic'
+    },
     inStock: {
         type: Boolean,
         default: true
@@ -50,7 +54,6 @@ const productSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// NO PRE-SAVE HOOK AT ALL - Let the route handle slug generation
-// We'll generate slug in the route, not here
+
 
 module.exports = mongoose.model('Product', productSchema);
